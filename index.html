@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>숲으로 출근</title>
+<meta name="description" content="모리걸과 세미 정장, 그 사이의 한 벌">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="숲으로 출근">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* 흑백 기본, 포인트는 살구 핑크와 베이지 두 가지. 한 열짜리 모바일 화면, 하단 탭 다섯 개 */
+  --ink:#222222; --paper:#ffffff; --sub:#666666; --mute:#959595;
+  --line:#eeeeee; --band:#f7f7f7; --border:#d5d5d5; --ph1:#ededed; --ph2:#e3e3e3;
+  --point:#e0a090; --beige:#f1eadb;
+  --serif:"Noto Serif KR","Apple SD Gothic Neo",serif;
+  --sans:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--band);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:inherit}
+input,textarea{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+img{max-width:100%;display:block}
+#app{max-width:430px;min-height:100%;margin:0 auto;background:var(--paper);display:flex;flex-direction:column;position:relative}
+.view{flex:1;display:flex;flex-direction:column;padding-bottom:84px}
+.view.notab{padding-bottom:0}
+.ic{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic.s{width:20px;height:20px}.ic.xs{width:16px;height:16px}.ic.l{width:36px;height:36px}
+.ic.fill{fill:currentColor}
+.serif{font-family:var(--serif)}
+.mute{color:var(--mute)}.sub{color:var(--sub)}.point{color:var(--point)}
+
+/* 머리 */
+.top{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;min-height:54px}
+.top h1{font-family:var(--serif);font-size:24px;font-weight:500}
+.logo{display:flex;align-items:center;gap:6px;font-family:var(--serif);font-size:21px;font-weight:600}
+.logo img{width:32px;height:34px;object-fit:contain;mix-blend-mode:multiply}
+.top .acts{display:flex;align-items:center;gap:14px}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;min-height:54px}
+.nav .t{font-size:15px;font-weight:500}
+.nav .save{font-weight:700;color:var(--point)}
+.iconbtn{display:flex;align-items:center;justify-content:center;min-width:32px;min-height:32px}
+
+/* 하단 탭 */
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:430px;background:var(--paper);border-top:1px solid #e5e5e5;display:flex;padding:10px 8px calc(14px + env(safe-area-inset-bottom));z-index:20}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#8a8a8a}
+.tabbar button[aria-current="page"]{color:var(--ink);font-weight:700}
+
+/* 홈 배너 */
+.hero{background:var(--ink);color:#fff;padding:30px 24px 26px;display:flex;flex-direction:column;gap:18px}
+.week{display:flex}
+.week span{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid #6e6e6e;margin-left:-1px;font-family:var(--serif);font-size:15px}
+.week span:first-child{margin-left:0}
+.week span.on{background:var(--beige);color:var(--ink);border-color:var(--beige)}
+.hero h2{font-family:var(--serif);font-size:32px;font-weight:500;line-height:1.35;text-wrap:balance}
+.hero p{color:#c4c4c4}
+.hero .meta{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#c4c4c4}
+.hero .meta b{color:#fff;font-weight:500;display:flex;align-items:center;gap:2px}
+.photo{background:var(--ph1) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:rgba(34,34,34,.45);font-size:12px;width:100%}
+.hero .photo{aspect-ratio:342/410}
+.hero .empty{border:1px dashed #6e6e6e;padding:36px 20px;text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center}
+
+/* 섹션 */
+.sec{display:flex;align-items:center;gap:4px;padding:32px 20px 16px;font-size:20px;font-weight:700}
+.sec .r{margin-left:auto;font-size:13px;font-weight:400;color:var(--mute)}
+.band{height:8px;background:var(--band);margin-top:28px}
+.hscroll{display:flex;gap:12px;overflow-x:auto;padding:0 20px;scrollbar-width:none}
+.hscroll::-webkit-scrollbar{display:none}
+.card{flex:none;width:150px;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.4}
+.card .photo{aspect-ratio:3/4}
+.card small{font-size:12px;color:var(--mute)}
+.day{flex:none;display:flex;flex-direction:column;gap:6px;align-items:center;font-size:12px;color:var(--mute)}
+.day .photo{width:64px;height:86px}
+.day.today{color:var(--ink);font-weight:700}
+.day.today .photo{background:#fff;border:1px dashed var(--ink);color:var(--ink)}
+.list{padding:0 20px 24px}
+.item{display:flex;gap:16px;padding:18px 0;border-top:1px solid var(--line);align-items:center;width:100%}
+.item:first-child{border-top:0}
+.item .num{font-family:var(--serif);font-size:30px;line-height:1.1;align-self:flex-start;min-width:22px}
+.item .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.item .k{font-size:12px;color:var(--mute)}
+.item .k.on{color:var(--point);font-weight:700}
+.item .t{font-size:18px;font-weight:300;line-height:1.4}
+.item .d{font-size:13px;color:var(--sub)}
+.item .photo{flex:none;width:72px;height:90px}
+.item .photo.sq{width:64px;height:64px}
+
+/* 버튼, 칩 */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 18px;border:1px solid var(--border);font-weight:500;background:#fff;text-decoration:none}
+.btn.solid{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.full{width:100%}
+.btn[disabled]{opacity:.45;cursor:default}
+.btn.sm{min-height:46px}
+.chips{display:flex;flex-wrap:wrap;gap:8px 8px}
+.chip{padding:8px 15px;border:1px solid var(--border);border-radius:20px;font-size:14px;background:#fff}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.off{opacity:.45}
+
+/* 상세 */
+.detail .photo{aspect-ratio:390/470}
+.pad{padding:26px 24px 8px;display:flex;flex-direction:column;gap:10px}
+.pad h2{font-family:var(--serif);font-size:27px;font-weight:500;line-height:1.4;text-wrap:balance}
+.steps{padding:0 24px}
+.step{display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--line)}
+.step:first-child{border-top:0}
+.step .k{font-family:var(--serif);font-size:22px;line-height:1.2}
+.step .t{font-size:17px;font-weight:300;line-height:1.4}
+.step .d{font-size:13px;color:var(--sub)}
+.bal{padding:20px 24px 28px;display:flex;flex-direction:column;gap:12px}
+.bal .h{display:flex;justify-content:space-between;font-size:14px;font-weight:500}
+.bal .h span{font-family:var(--serif);font-weight:400}
+.bal .ends{display:flex;justify-content:space-between;font-size:12px;color:var(--mute)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:24px;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:linear-gradient(to right,var(--point) var(--p,50%),var(--border) var(--p,50%))}
+input[type=range]::-moz-range-track{height:2px;background:var(--border)}
+input[type=range]::-moz-range-progress{height:2px;background:var(--point)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--point);margin-top:-10px}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid var(--point)}
+.bottom{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 20px calc(18px + env(safe-area-inset-bottom));display:flex;gap:8px;margin-top:auto}
+.bottom .btn.solid{flex:1}
+
+/* 발견 */
+.search{margin:10px 20px 20px;height:48px;border-radius:24px;background:var(--band);display:flex;align-items:center;padding:0 22px;gap:10px}
+.search input{flex:1;border:0;background:none;outline:none;min-width:0}
+.search input::placeholder{color:var(--mute)}
+.masonry{columns:2;column-gap:11px;padding:0 20px 28px}
+.pin{break-inside:avoid;margin-bottom:11px;display:block;width:100%}
+.pin .photo{min-height:120px}
+.pin img{width:100%;background:var(--ph1)}
+.emptybox{padding:56px 36px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.emptybox h2{font-family:var(--serif);font-size:22px;font-weight:500}
+.emptybox p{font-size:14px;color:var(--sub);line-height:1.7}
+.emptybox img{width:112px;height:auto;margin-bottom:6px;mix-blend-mode:multiply}
+
+/* 달력 */
+.month{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 20px 6px;font-family:var(--serif);font-size:19px;font-weight:500}
+.month button[disabled]{color:var(--border)}
+.stat{text-align:center;font-size:13px;color:var(--mute);padding-bottom:18px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:12px 3px;padding:0 12px}
+.cal .w{text-align:center;font-size:12px;line-height:22px;color:var(--mute)}
+/* 날짜는 칸 위에 작게, 사진 칸은 가리는 것 없이 세로로 길게 */
+.cal button,.cal i{background:none;padding:0;font-style:normal;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--mute);min-width:0}
+.cal .dn{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:12px;line-height:1;font-variant-numeric:tabular-nums}
+.cal .tile{display:block;align-self:stretch;height:104px;border-radius:6px;background:var(--band) center/cover no-repeat}
+.cal i .tile{background-color:#fbfbfb}
+.cal i.x{visibility:hidden}
+.cal .has .dn{color:var(--ink)}
+.cal .tile.cut{background-color:var(--band);background-size:contain;background-position:center bottom}
+.cal .tile.nop{background-color:var(--ph2)}
+.cal .now .dn{background:var(--ink);color:#fff;font-weight:600}
+.hearts{display:flex;gap:4px;color:var(--border)}
+.hearts .on{color:var(--point)}
+.hearts button{display:flex}
+
+/* 폼 */
+.form{padding:6px 20px 20px;display:flex;flex-direction:column;gap:22px}
+.drop{border:1px dashed var(--mute);background:var(--band) center/contain no-repeat;aspect-ratio:350/330;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--sub);font-size:14px}
+.drop.has{border-style:solid;border-color:var(--line);background-size:cover}
+.two{display:flex;gap:8px;margin-top:10px}
+.two>*{flex:1}
+.field{display:flex;flex-direction:column;gap:10px}
+.field>label,.field>.lb{font-size:14px;font-weight:500}
+.field input[type=text],.field input[type=url]{border:0;border-bottom:1px solid var(--ink);padding:8px 0;font-size:17px;outline:none;border-radius:0;background:none;width:100%}
+.field input.serif{font-family:var(--serif)}
+.field small{font-size:12px;color:var(--mute)}
+.check{display:flex;gap:12px;align-items:center;background:var(--beige);padding:14px 16px;width:100%}
+.check .box{width:22px;height:22px;border:1px solid var(--mute);background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;flex:none}
+.check.on .box{background:var(--point);border-color:var(--point)}
+.check b{font-weight:500;display:block}
+.check small{font-size:12px;color:var(--sub)}
+
+/* 처음 */
+.ob{flex:1;display:flex;flex-direction:column;padding:40px 24px 0;gap:16px}
+.ob h2{font-family:var(--serif);font-size:28px;font-weight:500;line-height:1.4;text-wrap:balance}
+.ob .n{font-family:var(--serif);font-size:14px;color:var(--mute)}
+.opt{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border:1px solid var(--border);width:100%}
+.opt.on{border:1.5px solid var(--ink);background:var(--beige)}
+.opt b{font-family:var(--serif);font-size:19px;font-weight:500;display:block}
+.opt small{font-size:13px;color:var(--sub)}
+.opt .ic{color:var(--point);visibility:hidden}.opt.on .ic{visibility:visible}
+.splash{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:40px 24px}
+.splash img{width:180px;height:auto;mix-blend-mode:multiply}
+.splash h1{font-family:var(--serif);font-size:34px;font-weight:600}
+.foot{padding:24px 24px calc(40px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;align-items:center}
+
+/* 내 서랍 */
+.quick{margin:10px 20px 0;border:1px solid var(--border);border-radius:10px;display:flex;padding:26px 0}
+.quick button{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;font-size:14px}
+.set{display:flex;justify-content:space-between;align-items:center;padding:17px 0;border-top:1px solid var(--line);font-size:16px;font-weight:300;width:100%}
+.set:first-child{border-top:0}
+.set span{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;color:var(--mute)}
+
+/* 시트, 알림 */
+.dim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:#fff;width:100%;max-width:430px;padding:28px 24px calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px;max-height:86%;overflow:auto}
+.sheet h3{font-family:var(--serif);font-size:22px;font-weight:500}
+.sheet p{font-size:14px;color:var(--sub);line-height:1.7}
+.sheet ol{padding-left:20px;font-size:14px;color:var(--sub);line-height:1.9}
+.cutting{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sub);padding:10px 24px;background:var(--band)}
+.toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;font-size:13px;z-index:60;max-width:90%;text-align:center}
+.note{margin:0 20px;padding:10px 14px;background:var(--beige);font-size:12px;color:var(--sub)}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .2s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+  <symbol id="i-hanger" viewBox="0 0 24 24"><path d="M12 9V8a2.2 2.2 0 1 0-2.2-2.2"/><path d="M12 9l9 7.5H3z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="1.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
+  <symbol id="i-drawer" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="13" rx="1.5"/><path d="M6 4h12M10 11h4"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-mark" viewBox="0 0 24 24"><path d="M7 4h10v16l-5-4-5 4z"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="3.5"/><path d="M9 7l1.5-3h3L15 7"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M8 16L16 8M9 8h7v7"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M5 19l1-4L16 5l3 3L9 18z"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M4 8h3.2M10.8 8H20M4 16h9.2M16.8 16H20"/><circle cx="9" cy="8" r="1.8"/><circle cx="15" cy="16" r="1.8"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></symbol>
+</svg>
+<div id="app"><div class="splash"><img src="leaf.jpg" alt=""><h1>숲으로 출근</h1><p class="sub">불러오는 중이에요</p></div></div>
+
+<script>
+"use strict";
+/* ---------- 도구 ---------- */
+const $app=document.getElementById('app');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ic=(n,c='')=>`<svg class="ic ${c}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const pad=n=>String(n).padStart(2,'0');
+const dkey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const fromKey=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);};
+const WD=['일','월','화','수','목','금','토'];
+const longDate=d=>`${d.getMonth()+1}월 ${d.getDate()}일 ${WD[d.getDay()]}요일`;
+const today=()=>new Date();
+const hash=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h;};
+const uid=()=>'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* ---------- 내용 ---------- */
+const FORMULAS=[
+ {n:'①',t:'재킷은 그대로, 안을 숲으로',d:'블레이저 안에 잔꽃 원피스나 레이스 블라우스',k:'겹',steps:[['겉','어깨선이 잡힌 재킷은 그대로','재킷 하나가 단정함을 잡아 줘요'],['안','핀의 원피스나 블라우스를 안에','넉넉한 실루엣이 재킷 아래로 보이게'],['발','플랫 대신 로퍼','양말을 살짝 보이면 숲의 느낌이 남아요']]},
+ {n:'②',t:'색만 숲으로',d:'블랙 대신 브라운, 크림, 카키',k:'색',steps:[['겉','재킷과 슬랙스의 형태는 그대로','선은 정장, 색만 바꿔요'],['색','핀에서 눈에 띄는 색 두 가지를 고르기','브라운, 크림, 카키 안에서 톤을 맞춰요'],['발','브라운 로퍼나 가죽 가방 하나','무채색은 받침으로 하나까지만']]},
+ {n:'③',t:'소재만 숲으로',d:'린넨 셔츠, 코튼 롱스커트, 니트 가디건',k:'소재',steps:[['겉','재킷 대신 도톰한 니트 가디건','단추를 채우면 한결 단정해요'],['안','린넨 셔츠나 코튼 블라우스','구김은 자연스럽게 두어도 괜찮아요'],['아래','핀처럼 넉넉한 롱스커트','로퍼 하나로 출근룩의 선을 지켜요']]},
+ {n:'④',t:'한 겹만 더',d:'셔츠 위 니트 조끼, 원피스 위 가디건',k:'겹',steps:[['안','늘 입던 셔츠와 하의는 그대로','기본은 세미 정장'],['겹','그 위에 니트 조끼나 얇은 가디건 하나','핀의 겹쳐 입기를 한 겹만 빌려 와요'],['끝','소매와 밑단을 살짝 보이게','겹이 보여야 숲의 느낌이 나요']]},
+ {n:'⑤',t:'작은 것으로',d:'둥근 카라, 양말과 로퍼, 스카프, 가죽 크로스백',k:'소품',steps:[['옷','옷은 평소의 세미 정장 그대로','미팅이 있는 날에도 안전해요'],['목','핀에서 본 스카프나 둥근 카라 하나','얼굴 가까이에 숲을 둬요'],['발','양말과 로퍼, 또는 가죽 크로스백','작은 것 하나면 충분해요']]}
+];
+const PIN_TAGS=['레이어드','린넨','가디건','원피스+재킷','롱스커트','로퍼','니트 조끼','둥근 카라','스카프','봄','여름','가을','겨울'];
+const ITEMS=['재킷','가디건','셔츠','블라우스','니트','원피스','롱스커트','슬랙스','로퍼','스카프'];
+const HEART_WORD=['','괜찮았어요','좋았어요','아주 좋았어요'];
+const TABS=[['home','홈','home'],['discover','발견','search'],['closet','옷장','hanger'],['calendar','기록','cal'],['drawer','내 서랍','drawer']];
+
+/* ---------- 상태와 저장: 이 기기의 IndexedDB ---------- */
+const S={settings:{onboarded:false,balance:50,boardUrl:''},pins:[],records:{},daily:{},route:{name:'loading'},stack:[],form:null,sheet:null,cutting:new Set(),q:'',tag:'전체',cal:null,busy:false};
+const DB_NAME='soop-to-work',DB_VER=1;let idb=null;const URLS=new Map();
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains('kv'))d.createObjectStore('kv');if(!d.objectStoreNames.contains('blobs'))d.createObjectStore('blobs');};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+function tx(store,mode,fn){return new Promise((res,rej)=>{const t=idb.transaction(store,mode);const q=fn(t.objectStore(store));let out;if(q)q.onsuccess=()=>{out=q.result;};t.oncomplete=()=>res(out);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error);});}
+const kvGet=k=>tx('kv','readonly',s=>s.get(k));
+const kvSet=(k,v)=>tx('kv','readwrite',s=>s.put(v,k));
+const blobPut=(id,b)=>tx('blobs','readwrite',s=>s.put(b,id));
+const blobDel=id=>tx('blobs','readwrite',s=>s.delete(id));
+const blobGet=id=>tx('blobs','readonly',s=>s.get(id));
+const KEY={app:'settings',pins:'pins',records:'records',daily:'daily'};
+const snapshot=k=>JSON.parse(JSON.stringify(k==='settings'?S.settings:S[k]));
+async function write(path){const k=KEY[path.split('/')[0]];await kvSet(k,snapshot(k));}
+const remove=write;
+async function loadAll(){
+  idb=await openDB();
+  const [st,pins,recs,daily,keys]=await Promise.all([kvGet('settings'),kvGet('pins'),kvGet('records'),kvGet('daily'),tx('blobs','readonly',s=>s.getAllKeys())]);
+  if(st)Object.assign(S.settings,st);S.pins=pins||[];S.records=recs||{};S.daily=daily||{};
+  for(const id of keys||[]){const b=await blobGet(id);if(b)URLS.set(id,URL.createObjectURL(b));}
+  try{if(navigator.storage&&navigator.storage.persist)await navigator.storage.persist();}catch(e){}
+}
+const src=o=>o&&o.imgId?(URLS.get(o.imgId)||''):'';
+const cutSrc=o=>o&&o.cutImgId?(URLS.get(o.cutImgId)||''):'';
+const bg=o=>{const u=src(o);return u?` style="background-image:url('${esc(u)}')"`:'';};
+/* 기록 썸네일: 누끼 사진이 있으면 그것을, 없으면 원래 사진을 */
+const tbg=o=>{const c=cutSrc(o);return c?` style="background-image:url('${esc(c)}');background-color:var(--band);background-size:contain;background-position:center bottom"`:bg(o);};
+const tcls=o=>cutSrc(o)?'cut':'';
+async function shrink(file,max=1400){
+  const url=URL.createObjectURL(file);
+  try{const img=await loadImg(url);
+    const r=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*r);c.height=Math.round(img.naturalHeight*r);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    const blob=await new Promise(res=>c.toBlob(res,'image/jpeg',0.86));
+    return {blob,preview:c.toDataURL('image/jpeg',0.6),ratio:c.width/c.height};
+  }finally{URL.revokeObjectURL(url);}
+}
+async function storeBlob(blob){const id=uid();await blobPut(id,blob);URLS.set(id,URL.createObjectURL(blob));return id;}
+async function dropBlob(id){if(!id)return;try{await blobDel(id);}catch(e){}const u=URLS.get(id);if(u){URL.revokeObjectURL(u);URLS.delete(id);}}
+async function storeImage(f){return {imgId:await storeBlob(f.blob)};}
+async function dropImage(o){if(o)await dropBlob(o.imgId);}
+async function dropCut(o){if(o)await dropBlob(o.cutImgId);}
+function loadImg(url){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url;});}
+
+/* ---------- 누끼: 브라우저 안에서 배경 지우기 (@imgly/background-removal) ----------
+   처음 한 번 모델 파일을 내려받고, 이후에는 브라우저가 보관한 것을 쓴다 */
+const BG_LIBS=['https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm','https://esm.sh/@imgly/background-removal@1.7.0'];
+let bgP=null;
+function loadBG(){
+  if(bgP)return bgP;
+  bgP=(async()=>{let err;for(const u of BG_LIBS){try{const m=await import(u);const f=m.removeBackground||m.default;if(typeof f==='function')return f;}catch(e){err=e;console.warn('bg lib',u,e);}}throw err||new Error('no lib');})();
+  bgP.catch(()=>{bgP=null;});return bgP;
+}
+async function trimPng(blob){
+  const url=URL.createObjectURL(blob);
+  try{const img=await loadImg(url);const W=img.naturalWidth,H=img.naturalHeight;
+    const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.drawImage(img,0,0);
+    const d=x.getImageData(0,0,W,H).data;let x0=W,y0=H,x1=-1,y1=-1;
+    for(let y=0;y<H;y++)for(let i=0;i<W;i++){if(d[(y*W+i)*4+3]>24){if(i<x0)x0=i;if(i>x1)x1=i;if(y<y0)y0=y;if(y>y1)y1=y;}}
+    if(x1<0||(x1-x0)*(y1-y0)<W*H*.02)throw new Error('no person');
+    const pad=Math.round(Math.max(x1-x0,y1-y0)*.03);const ox=Math.max(0,x0-pad),oy=Math.max(0,y0-pad),ow=Math.min(W,x1+pad+1)-ox,oh=Math.min(H,y1+pad+1)-oy;
+    const o=document.createElement('canvas');o.width=ow;o.height=oh;o.getContext('2d').drawImage(c,ox,oy,ow,oh,0,0,ow,oh);
+    return await new Promise(res=>o.toBlob(res,'image/png'));
+  }finally{URL.revokeObjectURL(url);}
+}
+async function cutPerson(blob){const removeBg=await loadBG();const out=await removeBg(blob,{output:{format:'image/png'}});return await trimPng(out);}
+async function runCut(date,blob){
+  if(S.cutting.has(date))return;S.cutting.add(date);render();
+  try{
+    if(!blob){const r=S.records[date];if(!r||!r.imgId)throw new Error('no photo');blob=await blobGet(r.imgId);}
+    const png=await cutPerson(blob);
+    const r=S.records[date];if(!r)return;
+    const old=r.cutImgId;r.cutImgId=await storeBlob(png);
+    await write('records/'+date);await dropBlob(old);
+    toast('사진 달력에 인물만 올렸어요');
+  }catch(e){console.warn('cut',e);toast(navigator.onLine===false?'인터넷에 연결되면 인물만 따 드릴게요':'인물만 따지 못해 원래 사진으로 둘게요');}
+  finally{S.cutting.delete(date);render();}
+}
+
+/* ---------- 백업 ---------- */
+const blobToDataUrl=b=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b);});
+async function exportBackup(){
+  const ids=new Set();S.pins.forEach(p=>p.imgId&&ids.add(p.imgId));Object.values(S.records).forEach(r=>{r.imgId&&ids.add(r.imgId);r.cutImgId&&ids.add(r.cutImgId);});
+  const images={};for(const id of ids){const b=await blobGet(id);if(b)images[id]=await blobToDataUrl(b);}
+  const data={app:'soop-to-work',version:1,exportedAt:new Date().toISOString(),settings:S.settings,pins:S.pins,records:S.records,daily:S.daily,images};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));
+  const a=document.createElement('a');a.href=url;a.download=`숲으로출근-백업-${dkey(today())}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
+  toast('백업 파일을 내려받았어요');
+}
+async function importBackup(file){
+  let data;try{data=JSON.parse(await file.text());}catch(e){toast('백업 파일을 읽지 못했어요');return;}
+  if(!data||data.app!=='soop-to-work'){toast('숲으로 출근 백업 파일이 아니에요');return;}
+  S.sheet={type:'confirm',title:'백업으로 바꿀까요?',text:'지금 이 기기에 있는 핀과 기록이 백업 파일의 내용으로 바뀌어요.',yesLabel:'바꾸기',yes:async()=>{
+    S.sheet=null;render();toast('백업을 불러오는 중이에요');
+    try{await tx('blobs','readwrite',s=>s.clear());
+      for(const [id,du] of Object.entries(data.images||{})){const b=await (await fetch(du)).blob();await blobPut(id,b);}
+      await kvSet('settings',data.settings||{});await kvSet('pins',data.pins||[]);await kvSet('records',data.records||{});await kvSet('daily',data.daily||{});
+      location.reload();
+    }catch(e){console.error(e);toast('백업을 불러오지 못했어요');}
+  }};render();
+}
+
+/* ---------- 오늘의 제안 ---------- */
+const pinById=id=>S.pins.find(p=>p.id===id);
+const pinTitle=p=>p.title||((p.tags||[]).slice(0,2).join(', '))||'제목 없는 핀';
+function baseBalance(d){const w=d.getDay();return clamp(S.settings.balance+(w===1?-10:w===5?10:0),20,80);}
+function formulaFor(k,bal){const set=bal<=35?[1,4]:bal>=65?[2,3]:[0,3];return set[hash(k)%2];}
+function pick(k,skip){
+  if(!S.pins.length)return null;
+  const recent=new Set();const d0=fromKey(k);for(let i=1;i<=7;i++){const d=new Date(d0);d.setDate(d.getDate()-i);const x=S.daily[dkey(d)];if(x)recent.add(x.pinId);}
+  let pool=S.pins.filter(p=>!recent.has(p.id)&&p.id!==skip);if(!pool.length)pool=S.pins.filter(p=>p.id!==skip);if(!pool.length)pool=S.pins;
+  return pool[(hash(k)+(skip?hash(skip):0))%pool.length];
+}
+function todayPlan(create=true){
+  const k=dkey(today());let d=S.daily[k];
+  if(d&&pinById(d.pinId))return d;
+  if(!create||!S.pins.length)return null;
+  const p=pick(k);d={pinId:p.id,balance:baseBalance(today()),chosen:false};S.daily[k]=d;write('daily/'+k,d).catch(()=>{});return d;
+}
+
+/* ---------- 이동 ---------- */
+function go(name,params={},opt={}){if(!opt.replace&&S.route.name!=='loading')S.stack.push(S.route);S.route={name,...params};S.sheet=null;render();window.scrollTo(0,0);if(TABS.some(t=>t[0]===name)){S.stack=[];try{history.replaceState(null,'','#'+name);}catch(e){}}}
+function back(){const r=S.stack.pop();S.route=r||{name:'home'};S.form=null;S.sheet=null;render();window.scrollTo(0,0);}
+let toastT;function toast(m){document.querySelectorAll('.toast').forEach(n=>n.remove());const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),2600);}
+
+/* ---------- 화면 조각 ---------- */
+const tabbar=cur=>`<nav class="tabbar" aria-label="주요 화면">${TABS.map(([id,l,i])=>`<button data-act="tab" data-to="${id}"${id===cur?' aria-current="page"':''}>${ic(i)}<span>${l}</span></button>`).join('')}</nav>`;
+const hearts=(n,cls='s')=>`<span class="hearts" aria-label="만족도 ${n} / 3">${[1,2,3].map(i=>`<span class="${i<=n?'on':''}">${ic('heart',cls+(i<=n?' fill':''))}</span>`).join('')}</span>`;
+const note=()=>'';
+const recTitle=r=>(r.items&&r.items.length?r.items.join(', '):(r.memo||'오늘의 옷'));
+
+function vHome(){
+  const d=today(),k=dkey(d),plan=todayPlan(),w=d.getDay();
+  const pin=plan&&pinById(plan.pinId),f=plan?FORMULAS[formulaFor(k,plan.balance)]:null;
+  const week=`<div class="week" aria-hidden="true">${['월','화','수','목','금'].map((x,i)=>`<span class="${w===i+1?'on':''}">${x}</span>`).join('')}</div>`;
+  const hero=pin?`<button class="photo" data-act="open-today" aria-label="오늘의 제안 자세히 보기"${bg(pin)}>${src(pin)?'':'오늘의 핀'}</button>
+    <div class="meta"><span>${longDate(d)} · 숲 ${plan.balance} : 정장 ${100-plan.balance}</span><button data-act="open-today"><b>자세히 ${ic('next','xs')}</b></button></div>`
+   :`<div class="empty"><p>아직 모은 핀이 없어요.<br>핀터레스트에서 저장한 모리걸 사진을 올리면<br>매일 한 장씩 골라 드려요.</p><button class="btn" data-act="pin-new" style="color:var(--ink)">첫 핀 올리기</button></div>`;
+  const pins=S.pins.slice(0,8);
+  const recent=Object.keys(S.records).sort().reverse().filter(x=>x!==k).slice(0,6);
+  const todayRec=S.records[k];
+  return `<div class="view">
+  <header class="top"><div class="logo"><img src="leaf.jpg" alt="">숲으로 출근</div><div class="acts"><button class="iconbtn" data-act="tab" data-to="drawer" aria-label="내 서랍">${ic('gear')}</button></div></header>
+  <section class="hero">${week}<div><h2>${plan&&plan.chosen?'오늘은 이렇게<br>입기로 했어요':'오늘은 이 옷<br>어떠세요?'}</h2><p>${f?esc(f.t)+'.':'숲과 사무실 사이의 한 벌.'}</p></div>${hero}</section>
+  ${note()?'<div style="height:12px"></div>'+note():''}
+  <h2 class="sec"><button data-act="tab" data-to="discover" style="display:flex;align-items:center;gap:4px">내 보드에서 ${ic('next','s')}</button></h2>
+  ${pins.length?`<div class="hscroll">${pins.map(p=>`<button class="card" data-act="pin" data-id="${p.id}"><span class="photo"${bg(p)}></span><span>${esc(pinTitle(p))}</span><small>${esc((p.tags||[])[0]||'')}</small></button>`).join('')}</div>`:`<p class="sub" style="padding:0 20px;font-size:14px">발견 탭에서 핀을 올리면 여기에 보여요.</p>`}
+  <div class="band"></div>
+  <h2 class="sec"><button data-act="tab" data-to="calendar" style="display:flex;align-items:center;gap:4px">최근 기록 ${ic('next','s')}</button></h2>
+  <div class="hscroll" style="gap:8px">
+    ${todayRec?`<button class="day today" data-act="rec" data-date="${k}"><span class="photo" style="border-style:solid;background-image:url('${esc(cutSrc(todayRec)||src(todayRec))}');background-size:${cutSrc(todayRec)?'contain':'cover'};background-position:center bottom;background-color:var(--band)"></span>오늘</button>`:`<button class="day today" data-act="rec-new" data-date="${k}"><span class="photo">${ic('plus','s')}</span>오늘</button>`}
+    ${recent.map(x=>{const r=S.records[x],dd=fromKey(x);return `<button class="day" data-act="rec" data-date="${x}"><span class="photo"${tbg(r)}></span>${dd.getDate()} ${WD[dd.getDay()]}</button>`;}).join('')}
+  </div>
+  <div class="band"></div>
+  <h2 class="sec">섞는 공식</h2>
+  <div class="list">${FORMULAS.map((x,i)=>`<div class="item"><span class="num">${i+1}</span><span class="tx"><span class="k ${f===x?'on':''}">${f===x?'오늘 쓴 공식':esc(x.k)}</span><span class="t">${esc(x.t)}</span><span class="d">${esc(x.d)}</span></span></div>`).join('')}</div>
+  </div>${tabbar('home')}`;
+}
+
+function vSuggest(){
+  const d=today(),k=dkey(d),plan=todayPlan(false);const pin=plan&&pinById(plan.pinId);
+  if(!pin)return vPin(null);
+  const f=FORMULAS[formulaFor(k,plan.balance)];
+  return `<div class="view notab detail">
+  <header class="nav"><button class="iconbtn" data-act="back" aria-label="뒤로">${ic('back')}</button><span class="t">${longDate(d)}</span><button class="iconbtn" data-act="pin-save" data-id="${pin.id}" aria-label="핀 저장" aria-pressed="${!!pin.saved}">${ic('mark',pin.saved?'fill':'')}</button></header>
+  <div class="photo"${bg(pin)}>${src(pin)?'':'오늘의 핀'}</div>
+  <div class="pad"><span class="mute" style="font-size:12px">오늘의 핀 · 내 보드에서</span><h2>${esc(pinTitle(pin))}</h2>
+   ${pin.link?`<a href="${esc(pin.link)}" target="_blank" rel="noopener" class="sub" style="font-size:13px;display:flex;align-items:center;gap:2px;text-decoration:none">핀터레스트에서 보기 ${ic('link','xs')}</a>`:''}</div>
+  <div class="band" style="margin-top:20px"></div>
+  <div class="pad" style="padding-top:28px"><h3 style="font-size:20px;font-weight:700">세미 정장으로 옮기면</h3><span class="mute" style="font-size:13px">공식 ${f.n}  ${esc(f.t)}</span></div>
+  <div class="steps">${f.steps.map(s=>`<div class="step"><span class="k">${esc(s[0])}</span><span><span class="t" style="display:block">${esc(s[1])}</span><span class="d">${esc(s[2])}</span></span></div>`).join('')}</div>
+  <div class="bal"><div class="h"><label for="bal">오늘의 밸런스</label><span id="balv">숲 ${plan.balance} : 정장 ${100-plan.balance}</span></div>
+   <input type="range" id="bal" min="20" max="80" step="10" value="${100-plan.balance}" style="--p:${(100-plan.balance-20)/60*100}%" data-act="bal">
+   <div class="ends"><span>숲</span><span>정장</span></div></div>
+  <div class="bottom"><button class="btn" data-act="another">다른 핀 보기</button><button class="btn solid" data-act="choose">${plan.chosen?'이렇게 입기로 했어요':'오늘 이렇게 입을게요'}</button></div>
+  </div>`;
+}
+
+function vPin(pin){
+  if(!pin)return `<div class="view notab"><header class="nav"><button class="iconbtn" data-act="back" aria-label="뒤로">${ic('back')}</button><span class="t">핀</span><span class="iconbtn"></span></header><div class="emptybox"><p>이 핀을 찾을 수 없어요.</p></div></div>`;
+  return `<div class="view notab detail">
+  <header class="nav"><button class="iconbtn" data-act="back" aria-label="뒤로">${ic('back')}</button><span class="t">핀</span><button class="iconbtn" data-act="pin-save" data-id="${pin.id}" aria-label="핀 저장" aria-pressed="${!!pin.saved}">${ic('mark',pin.saved?'fill':'')}</button></header>
+  ${src(pin)?`<img src="${esc(src(pin))}" alt="${esc(pinTitle(pin))}" style="width:100%">`:`<div class="photo">사진 없음</div>`}
+  <div class="pad"><h2>${esc(pinTitle(pin))}</h2>
+   ${(pin.tags||[]).length?`<div class="chips">${pin.tags.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>`:''}
+   ${pin.link?`<a href="${esc(pin.link)}" target="_blank" rel="noopener" class="sub" style="font-size:13px;display:flex;align-items:center;gap:2px;text-decoration:none">핀터레스트에서 보기 ${ic('link','xs')}</a>`:''}</div>
+  <div style="padding:20px 24px 28px;display:flex;gap:8px"><button class="btn sm" data-act="pin-edit" data-id="${pin.id}">${ic('pen','s')} 고치기</button><button class="btn sm" data-act="pin-del" data-id="${pin.id}">${ic('trash','s')} 지우기</button></div>
+  <div class="bottom"><button class="btn solid" data-act="pin-today" data-id="${pin.id}">이 핀으로 오늘 입기</button></div>
+  </div>`;
+}
+
+function vDiscover(){
+  const q=S.q.trim();const tags=['전체','저장한 핀',...PIN_TAGS.filter(t=>S.pins.some(p=>(p.tags||[]).includes(t)))];
+  if(!tags.includes(S.tag))S.tag='전체';
+  let list=S.pins.filter(p=>S.tag==='전체'||(S.tag==='저장한 핀'?p.saved:(p.tags||[]).includes(S.tag)));
+  if(q)list=list.filter(p=>(pinTitle(p)+' '+(p.tags||[]).join(' ')).includes(q));
+  return `<div class="view">
+  <div class="search">${ic('search','s')}<input id="q" type="text" placeholder="핀, 키워드를 검색하세요" value="${esc(S.q)}" aria-label="핀 검색" autocomplete="off"></div>
+  <div class="chips" style="padding:0 20px">${tags.map(t=>`<button class="chip ${S.tag===t?'on':''}" data-act="tag" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+  <h2 class="sec" style="padding-top:36px">내 보드의 핀 <span class="r">${S.pins.length?`${list.length}개`:''}</span></h2>
+  <div style="padding:0 20px 20px;display:flex;gap:8px"><button class="btn sm" style="flex:1" data-act="pin-new">${ic('plus','s')} 핀 올리기</button><label class="btn sm" style="flex:1;cursor:pointer">여러 장 한꺼번에<input type="file" id="f-many" accept="image/*" multiple hidden></label></div>
+  ${S.settings.boardUrl?`<a class="sub" href="${esc(S.settings.boardUrl)}" target="_blank" rel="noopener" style="padding:0 20px 20px;font-size:13px;display:flex;align-items:center;gap:2px;text-decoration:none">내 핀터레스트 보드 열기 ${ic('link','xs')}</a>`:''}
+  ${list.length?`<div class="masonry" id="masonry">${list.map(p=>`<button class="pin" data-act="pin" data-id="${p.id}" aria-label="${esc(pinTitle(p))}">${src(p)?`<img src="${esc(src(p))}" alt="" loading="lazy"${p.ratio?` style="aspect-ratio:${p.ratio}"`:''}>`:`<span class="photo">사진 없음</span>`}</button>`).join('')}</div>`
+   :`<div class="emptybox"><p>${S.pins.length?'조건에 맞는 핀이 없어요.':'핀터레스트에서 마음에 드는 코디 사진을 저장한 뒤<br>여기에 올려 주세요.'}</p></div>`}
+  </div>${tabbar('discover')}`;
+}
+
+function vPinForm(){
+  const f=S.form;
+  return `<div class="view notab">
+  <header class="nav"><button class="iconbtn" data-act="back" aria-label="닫기">${ic('close')}</button><span class="t">${f.id?'핀 고치기':'핀 올리기'}</span><button class="save" data-act="pin-submit"${S.busy?' disabled':''}>저장</button></header>
+  <div class="form">
+   <div><label class="drop ${f.preview?'has':''}" for="f-photo"${f.preview?` style="background-image:url('${esc(f.preview)}')"`:''}>${f.preview?'':ic('plus','l')+'<span>핀터레스트에서 저장한 사진을 골라 주세요</span>'}</label><input type="file" id="f-photo" accept="image/*" hidden></div>
+   <div class="field"><label for="p-title">제목</label><input type="text" id="p-title" data-f="title" value="${esc(f.title)}" placeholder="린넨 원피스 위에 니트 가디건" maxlength="40"></div>
+   <div class="field"><label for="p-link">핀 주소 (선택)</label><input type="url" id="p-link" data-f="link" value="${esc(f.link)}" placeholder="https://pin.it/…" inputmode="url"><small>적어 두면 핀터레스트 원본으로 바로 갈 수 있어요.</small></div>
+   <div class="field"><span class="lb">키워드</span><div class="chips">${PIN_TAGS.map(t=>`<button class="chip ${f.tags.includes(t)?'on':''}" data-act="ftag" data-tag="${esc(t)}" aria-pressed="${f.tags.includes(t)}">${esc(t)}</button>`).join('')}</div></div>
+  </div>
+  <div class="bottom"><button class="btn solid" data-act="pin-submit"${S.busy?' disabled':''}>${S.busy?'저장하는 중…':'보드에 담기'}</button></div></div>`;
+}
+
+function vCloset(){
+  return `<div class="view">
+  <header class="top"><h1>옷장</h1><span class="mute" style="display:flex;align-items:center;gap:4px;font-size:14px">${ic('plus','s')}등록</span></header>
+  <div class="chips" style="padding:6px 20px 0">${['전체','아우터','상의','하의','원피스','신발','소품'].map(t=>`<span class="chip off">${t}</span>`).join('')}</div>
+  <div class="emptybox" style="padding-top:64px"><img src="clay.jpg" alt=""><h2>옷장은 아직 비어 있어요</h2><p>한 벌씩 찍어 채워 갈 수 있게 준비하고 있어요.<br>그동안은 내 보드의 핀으로<br>오늘의 옷을 제안해 드릴게요.</p><button class="btn" data-act="tab" data-to="discover">발견에서 핀 둘러보기</button></div>
+  </div>${tabbar('closet')}`;
+}
+
+function vCalendar(){
+  const t=today();if(!S.cal)S.cal={y:t.getFullYear(),m:t.getMonth()};const {y,m}=S.cal;
+  const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),tk=dkey(t);
+  const isCur=y===t.getFullYear()&&m===t.getMonth();
+  const keys=Object.keys(S.records).filter(k=>k.startsWith(`${y}-${pad(m+1)}-`));
+  let cells='';for(let i=0;i<first;i++)cells+='<i class="x" aria-hidden="true"><span class="dn">0</span><span class="tile"></span></i>';
+  for(let d=1;d<=days;d++){const k=`${y}-${pad(m+1)}-${pad(d)}`,r=S.records[k],fut=k>tk;
+    if(r)cells+=`<button class="has ${k===tk?'now':''}" data-act="rec" data-date="${k}" aria-label="${m+1}월 ${d}일 기록 보기"><span class="dn">${d}</span><span class="tile ${src(r)?tcls(r):'nop'}"${tbg(r)}></span></button>`;
+    else if(fut)cells+=`<i><span class="dn">${d}</span><span class="tile"></span></i>`;
+    else cells+=`<button class="${k===tk?'now':''}" data-act="rec-new" data-date="${k}" aria-label="${m+1}월 ${d}일 기록하기"><span class="dn">${d}</span><span class="tile"></span></button>`;}
+  const past=Object.keys(S.records).sort().reverse().slice(0,10);
+  return `<div class="view">
+  <header class="top"><h1>기록</h1><button class="iconbtn" data-act="rec-new" data-date="${tk}" aria-label="오늘 기록하기">${ic('cam')}</button></header>
+  <div class="month"><button class="iconbtn" data-act="mon" data-d="-1" aria-label="이전 달">${ic('back','s')}</button><span>${y}년 ${m+1}월</span><button class="iconbtn" data-act="mon" data-d="1" aria-label="다음 달"${isCur?' disabled':''}>${ic('next','s')}</button></div>
+  ${[...S.cutting].some(k=>k.startsWith(`${y}-${pad(m+1)}-`))?'<p class="cutting" style="margin:0 16px 12px">사진에서 인물만 따는 중이에요…</p>':''}<p class="stat">${keys.length?`이번 달 ${keys.length}일 기록 · 아주 좋았던 날 ${keys.filter(k=>S.records[k].hearts===3).length}일`:'이 달에는 아직 기록이 없어요'}</p>
+  <div class="cal">${WD.map(w=>`<span class="w">${w}</span>`).join('')}${cells}</div>
+  <div style="padding:20px 20px 0"><button class="btn solid full" data-act="${S.records[tk]?'rec':'rec-new'}" data-date="${tk}">${ic('cam','s')} ${S.records[tk]?'오늘 기록 보기':'오늘 입은 옷 기록하기'}</button></div>
+  ${note()?'<div style="height:16px"></div>'+note():''}
+  <div class="band"></div><h2 class="sec">지난 기록</h2>
+  <div class="list">${past.length?past.map(k=>{const r=S.records[k];return `<button class="item" data-act="rec" data-date="${k}"><span class="tx"><span class="k">${longDate(fromKey(k))}</span><span class="t">${esc(recTitle(r))}</span><span style="display:flex;gap:10px;align-items:center">${hearts(r.hearts||0,'xs')}${r.balance?`<span class="serif mute" style="font-size:12px">숲 ${r.balance} : 정장 ${100-r.balance}</span>`:''}</span></span><span class="photo"${tbg(r)}></span></button>`;}).join(''):'<p class="sub" style="font-size:14px">첫 기록을 남기면 여기에 쌓여요.</p>'}</div>
+  </div>${tabbar('calendar')}`;
+}
+
+function vRecForm(){
+  const f=S.form,d=fromKey(f.date),plan=S.daily[f.date],pin=plan&&pinById(plan.pinId);
+  return `<div class="view notab">
+  <header class="nav"><button class="iconbtn" data-act="back" aria-label="닫기">${ic('close')}</button><span class="t">${f.date===dkey(today())?'오늘의 기록':longDate(d)}</span><button class="save" data-act="rec-submit"${S.busy?' disabled':''}>저장</button></header>
+  <div class="form">
+   <div><div class="drop ${f.preview?'has':''}"${f.preview?` style="background-image:url('${esc(f.preview)}')"`:''}>${f.preview?'':ic('cam','l')+'<span>오늘 입은 옷을 찍어 주세요</span>'}</div>
+    <div class="two"><label class="btn sm" style="cursor:pointer">${ic('cam','s')} 사진 찍기<input type="file" id="f-cam" accept="image/*" capture="environment" hidden></label><label class="btn sm" style="cursor:pointer">앨범에서 고르기<input type="file" id="f-photo" accept="image/*" hidden></label></div></div>
+   ${pin?`<button class="check ${f.followed?'on':''}" data-act="followed" aria-pressed="${f.followed}"><span class="box">${ic('check','xs')}</span><span><b>이날의 제안대로 입었어요</b><small>${esc(pinTitle(pin))}</small></span></button>`:''}
+   <p class="mute" style="font-size:12px;margin-top:-12px">사진 달력에는 사진에서 인물만 따서 올려요.</p>
+   <div class="field"><span class="lb">오늘 옷, 마음에 들었나요?</span><div style="display:flex;align-items:center;gap:14px"><span class="hearts" role="group" aria-label="만족도">${[1,2,3].map(i=>`<button class="${i<=f.hearts?'on':''}" data-act="heart" data-n="${i}" aria-label="하트 ${i}개" aria-pressed="${i<=f.hearts}">${ic('heart','l'+(i<=f.hearts?' fill':''))}</button>`).join('')}</span><span class="sub" style="font-size:13px">${HEART_WORD[f.hearts]}</span></div></div>
+   <div class="field"><label for="r-memo">한 줄 메모</label><input class="serif" type="text" id="r-memo" data-f="memo" value="${esc(f.memo)}" placeholder="재킷 덕분에 회의에서도 편했다." maxlength="80"></div>
+   <div class="field"><span class="lb">입은 것</span><div class="chips">${ITEMS.map(t=>`<button class="chip ${f.items.includes(t)?'on':''}" data-act="fitem" data-tag="${esc(t)}" aria-pressed="${f.items.includes(t)}">${esc(t)}</button>`).join('')}</div></div>
+  </div>
+  <div class="bottom"><button class="btn solid" data-act="rec-submit"${S.busy?' disabled':''}>${S.busy?'저장하는 중…':'달력에 남기기'}</button></div></div>`;
+}
+
+function vRec(){
+  const k=S.route.date,r=S.records[k];
+  if(!r)return `<div class="view notab"><header class="nav"><button class="iconbtn" data-act="back" aria-label="뒤로">${ic('back')}</button><span class="t">기록</span><span class="iconbtn"></span></header><div class="emptybox"><p>이날의 기록이 없어요.</p></div></div>`;
+  const pin=r.pinId&&pinById(r.pinId),f=FORMULAS[r.formula??-1];
+  return `<div class="view notab detail">
+  <header class="nav"><button class="iconbtn" data-act="back" aria-label="뒤로">${ic('back')}</button><span class="t">${longDate(fromKey(k))}</span><button class="iconbtn" data-act="rec-edit" data-date="${k}" aria-label="고치기">${ic('pen')}</button></header>
+  ${src(r)?`<img src="${esc(src(r))}" alt="이날 입은 옷" style="width:100%">`:`<div class="photo">사진 없이 남긴 기록</div>`}
+  <div class="pad" style="gap:14px;padding-bottom:26px"><div style="display:flex;justify-content:space-between;align-items:center">${hearts(r.hearts||0,'')}${r.balance?`<span class="serif" style="font-size:14px">숲 ${r.balance} : 정장 ${100-r.balance}</span>`:''}</div>
+   <h2 style="font-size:25px">${esc(recTitle(r))}</h2>${r.memo&&r.items&&r.items.length?`<p class="sub" style="line-height:1.75">${esc(r.memo)}</p>`:''}
+   ${(r.items||[]).length?`<div class="chips">${r.items.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>`:''}</div>
+  ${pin?`<div class="band" style="margin-top:0"></div><h2 class="sec">이날의 제안</h2><div class="list"><button class="item" data-act="pin" data-id="${pin.id}"><span class="photo"${bg(pin)}></span><span class="tx">${f?`<span class="k">공식 ${f.n}  ${esc(f.t)}</span>`:''}<span class="t" style="font-size:17px">${esc(pinTitle(pin))}</span><span class="k">${r.followed?'제안대로 입었어요':'제안과 다르게 입었어요'}</span></span>${ic('next','s')}</button></div>`:''}
+  ${S.cutting.has(k)?'<p class="cutting">사진에서 인물만 따는 중이에요…</p>':''}
+  <div style="padding:8px 24px 32px;display:flex;gap:8px;flex-wrap:wrap">${src(r)?`<button class="btn sm" data-act="recut" data-date="${k}"${S.cutting.has(k)?' disabled':''}>인물만 다시 따기</button>`:''}<button class="btn sm" data-act="rec-del" data-date="${k}">${ic('trash','s')} 이 기록 지우기</button></div>
+  </div>`;
+}
+
+function vDrawer(){
+  const saved=S.pins.filter(p=>p.saved),best=Object.keys(S.records).filter(k=>S.records[k].hearts===3).sort().reverse().slice(0,10),b=S.settings.balance;
+  return `<div class="view">
+  <header class="top"><h1>내 서랍</h1></header>
+  <div class="quick"><button data-act="rec-new" data-date="${dkey(today())}">${ic('cam','')}기록하기</button><button data-act="saved">${ic('mark','')}저장한 핀</button><button data-act="sheet" data-s="balance">${ic('scale','')}밸런스</button></div>
+  <h2 class="sec"><button data-act="saved" style="display:flex;align-items:center;gap:4px">저장한 핀 ${ic('next','s')}</button></h2>
+  ${saved.length?`<div class="hscroll">${saved.map(p=>`<button class="card" style="width:130px" data-act="pin" data-id="${p.id}"><span class="photo"${bg(p)}></span><span>${esc(pinTitle(p))}</span></button>`).join('')}</div>`:`<p class="sub" style="padding:0 20px;font-size:14px">핀 화면의 책갈피를 누르면 여기에 모여요.</p>`}
+  <div class="band"></div><h2 class="sec">아주 좋았던 날</h2>
+  ${best.length?`<div class="hscroll" style="gap:8px">${best.map(k=>{const d=fromKey(k);return `<button class="day" data-act="rec" data-date="${k}"><span class="photo" style="width:72px;height:96px;${cutSrc(S.records[k])?`background-image:url('${esc(cutSrc(S.records[k]))}');background-size:contain;background-position:center bottom;background-color:var(--band)`:(src(S.records[k])?`background-image:url('${esc(src(S.records[k]))}')`:'')}"></span><span class="serif">${d.getMonth()+1}.${d.getDate()}</span></button>`;}).join('')}</div>`:`<p class="sub" style="padding:0 20px;font-size:14px">하트 세 개를 준 날이 여기에 모여요.</p>`}
+  <div class="band"></div><h2 class="sec">설정</h2>
+  <div class="list">
+   <button class="set" data-act="sheet" data-s="board">핀터레스트 보드<span>${S.settings.boardUrl?'<b class="point" style="font-weight:400">주소 저장됨</b>':'없음'} ${ic('next','xs')}</span></button>
+   <button class="set" data-act="sheet" data-s="balance">평소 밸런스<span>숲 ${b} : 정장 ${100-b} ${ic('next','xs')}</span></button>
+   <button class="set" data-act="sheet" data-s="install">홈 화면에 추가하는 법<span>${ic('next','xs')}</span></button>
+  </div>
+  <div class="band" style="margin-top:4px"></div><h2 class="sec">백업</h2>
+  <p class="sub" style="padding:0 20px 8px;font-size:13px;line-height:1.7">핀과 기록은 이 휴대폰에만 저장돼요. 브라우저 데이터를 지우거나 휴대폰을 바꾸면 사라지니, 가끔 백업 파일을 내려받아 두세요.</p>
+  <div class="list">
+   <button class="set" data-act="backup-out">백업 파일 내려받기<span>${ic('next','xs')}</span></button>
+   <label class="set" style="cursor:pointer">백업 파일 불러오기<span>${ic('next','xs')}</span><input type="file" id="f-backup" accept="application/json,.json" hidden></label>
+  </div>
+  </div>${tabbar('drawer')}`;
+}
+
+const BAL=[[30,'숲 30 : 정장 70','단정함이 먼저. 색과 소품만 숲으로'],[50,'숲 50 : 정장 50','재킷에 원피스처럼, 큰 옷 하나씩 섞기'],[70,'숲 70 : 정장 30','가디건과 롱스커트에 로퍼 하나']];
+const balOpts=cur=>BAL.map(([v,t,d])=>`<button class="opt ${cur===v?'on':''}" data-act="set-bal" data-v="${v}" aria-pressed="${cur===v}"><span><b>${t}</b><small>${d}</small></span>${ic('check')}</button>`).join('');
+function vOnboard(){
+  const st=S.route.step||0;
+  if(st===0)return `<div class="view notab"><div class="splash"><img src="leaf.jpg" alt=""><h1>숲으로 출근</h1><p class="sub">모리걸과 세미 정장,<br>그 사이의 한 벌</p></div><div class="foot"><button class="btn solid full" data-act="ob" data-step="1">시작하기</button><span class="mute" style="font-size:12px">혼자 쓰는 옷 일기</span></div></div>`;
+  if(st===1)return `<div class="view notab"><div class="ob"><span class="n">1 / 2</span><h2>영감을 모으는<br>핀터레스트 보드를<br>알려 주세요</h2><p class="sub" style="font-size:14px">보드로 바로 가는 길을 만들어 둘게요. 핀 사진은 발견 탭에서 직접 올리면 홈과 발견에 나타나요.</p>
+    <div class="field" style="padding-top:20px"><label for="ob-url" class="mute" style="font-size:12px;font-weight:400">보드 주소</label><input type="url" id="ob-url" data-s="boardUrl" value="${esc(S.settings.boardUrl)}" placeholder="https://pin.it/…" inputmode="url"><small>나중에 내 서랍에서 바꿀 수 있어요.</small></div></div>
+    <div class="foot"><button class="btn solid full" data-act="ob" data-step="2">다음</button></div></div>`;
+  return `<div class="view notab"><div class="ob"><span class="n">2 / 2</span><h2>평소엔 어느 쪽에<br>가깝게 입고 싶나요?</h2><p class="sub" style="font-size:14px">매일의 제안이 이 비율을 기준으로 만들어져요. 언제든 바꿀 수 있어요.</p><div style="display:flex;flex-direction:column;gap:12px;padding-top:16px">${balOpts(S.settings.balance)}</div></div>
+    <div class="foot"><button class="btn solid full" data-act="ob-done">숲으로 출근하기</button></div></div>`;
+}
+
+function vSheet(){
+  const s=S.sheet;if(!s)return '';let body='';
+  if(s.type==='balance')body=`<h3>평소 밸런스</h3><p>월요일은 정장 쪽으로, 금요일은 숲 쪽으로 조금씩 옮겨서 제안해요.</p>${balOpts(S.settings.balance)}<button class="btn solid full" data-act="sheet-close">닫기</button>`;
+  else if(s.type==='board')body=`<h3>핀터레스트 보드</h3><div class="field"><label for="sh-url">보드 주소</label><input type="url" id="sh-url" value="${esc(S.settings.boardUrl)}" placeholder="https://pin.it/…" inputmode="url"></div>${S.settings.boardUrl?`<a class="btn" href="${esc(S.settings.boardUrl)}" target="_blank" rel="noopener">보드 열기 ${ic('link','s')}</a>`:''}<button class="btn solid full" data-act="board-save">저장</button>`;
+  else if(s.type==='install')body=`<h3>홈 화면에 추가하는 법</h3><ol><li>이 화면을 Safari에서 엽니다.</li><li>아래 공유 버튼을 누릅니다.</li><li>‘홈 화면에 추가’를 고릅니다.</li></ol><p>홈 화면에 잎 단추 아이콘이 생기고, 앱처럼 주소창 없이 열려요.</p><button class="btn solid full" data-act="sheet-close">닫기</button>`;
+  else if(s.type==='confirm')body=`<h3>${esc(s.title)}</h3><p>${esc(s.text)}</p><div class="two"><button class="btn" data-act="sheet-close">그만두기</button><button class="btn solid" data-act="confirm-yes">${esc(s.yesLabel||'지우기')}</button></div>`;
+  return `<div class="dim" data-act="sheet-dim"><div class="sheet" role="dialog" aria-modal="true">${body}</div></div>`;
+}
+
+function render(){
+  const r=S.route;let h='';
+  switch(r.name){
+    case 'onboard':h=vOnboard();break;case 'home':h=vHome();break;case 'suggest':h=vSuggest();break;
+    case 'discover':h=vDiscover();break;case 'pin':h=vPin(pinById(r.id));break;case 'pinform':h=vPinForm();break;
+    case 'closet':h=vCloset();break;case 'calendar':h=vCalendar();break;case 'recform':h=vRecForm();break;case 'rec':h=vRec();break;
+    case 'drawer':h=vDrawer();break;default:h=vHome();}
+  $app.innerHTML=h+vSheet();
+}
+
+/* ---------- 동작 ---------- */
+const fail=e=>{console.error(e);S.busy=false;render();toast(e&&e.name==='QuotaExceededError'?'휴대폰 저장 공간이 부족해요. 오래된 핀이나 기록을 지워 주세요.':'저장하지 못했어요. 잠시 뒤 다시 해 주세요.');};
+async function savePin(p){const i=S.pins.findIndex(x=>x.id===p.id);if(i<0)S.pins.unshift(p);else S.pins[i]=p;await write('pins/'+p.id,p);}
+function newPinForm(pin){S.form=pin?{id:pin.id,title:pin.title||'',link:pin.link||'',tags:[...(pin.tags||[])],preview:src(pin),img:null}:{title:'',link:'',tags:[],preview:'',img:null};go('pinform');}
+function newRecForm(date){const r=S.records[date],plan=S.daily[date];S.form=r?{date,hearts:r.hearts||0,memo:r.memo||'',items:[...(r.items||[])],followed:!!r.followed,preview:src(r),img:null}:{date,hearts:2,memo:'',items:[],followed:!!(plan&&plan.chosen),preview:'',img:null};go('recform');}
+const A={
+  tab:e=>go(e.to),back:()=>back(),
+  'open-today':()=>go('suggest'),
+  pin:e=>go('pin',{id:e.id}),
+  'pin-new':()=>newPinForm(null),'pin-edit':e=>newPinForm(pinById(e.id)),
+  'pin-save':async e=>{const p=pinById(e.id);if(!p)return;p.saved=!p.saved;render();toast(p.saved?'내 서랍에 저장했어요':'저장을 풀었어요');try{await write('pins/'+p.id,p);}catch(x){fail(x);}},
+  'pin-del':e=>{S.sheet={type:'confirm',title:'이 핀을 지울까요?',text:'지운 핀은 되돌릴 수 없어요.',yes:async()=>{const p=pinById(e.id);S.pins=S.pins.filter(x=>x.id!==e.id);S.sheet=null;back();try{await remove('pins/'+e.id);await dropImage(p);}catch(x){fail(x);}toast('핀을 지웠어요');}};render();},
+  'pin-today':async e=>{const k=dkey(today());S.daily[k]={pinId:e.id,balance:(S.daily[k]&&S.daily[k].balance)||baseBalance(today()),chosen:false};S.stack=[{name:'home'}];S.route={name:'suggest'};render();window.scrollTo(0,0);try{await write('daily/'+k,S.daily[k]);}catch(x){fail(x);}},
+  ftag:e=>{const t=S.form.tags,i=t.indexOf(e.tag);i<0?t.push(e.tag):t.splice(i,1);render();},
+  fitem:e=>{const t=S.form.items,i=t.indexOf(e.tag);i<0?t.push(e.tag):t.splice(i,1);render();},
+  'pin-submit':async()=>{const f=S.form;if(S.busy)return;if(!f.id&&!f.img){toast('사진을 먼저 골라 주세요');return;}
+    S.busy=true;render();try{const old=f.id?pinById(f.id):null;let p=old?{...old}:{id:uid(),createdAt:Date.now(),saved:false};
+      if(f.img){const im=await storeImage(f.img);if(old)await dropImage(old);delete p.assetId;delete p.dataUrl;delete p._url;Object.assign(p,im,{ratio:Math.round(f.img.ratio*1000)/1000});}
+      p.title=f.title.trim();p.link=f.link.trim();p.tags=f.tags;await savePin(p);S.busy=false;S.form=null;back();toast(old?'핀을 고쳤어요':'보드에 담았어요');}catch(x){fail(x);}},
+  tag:e=>{S.tag=e.tag;render();},
+  saved:()=>{S.tag='저장한 핀';S.q='';go('discover');},
+  another:async()=>{const k=dkey(today()),d=S.daily[k];if(S.pins.length<2){toast('핀이 하나뿐이에요. 발견에서 더 올려 주세요');return;}const p=pick(k,d.pinId);d.pinId=p.id;d.chosen=false;render();window.scrollTo(0,0);try{await write('daily/'+k,d);}catch(x){fail(x);}},
+  choose:async()=>{const k=dkey(today()),d=S.daily[k];d.chosen=!d.chosen;render();toast(d.chosen?'좋아요. 저녁에 사진으로 남겨 보세요':'선택을 풀었어요');try{await write('daily/'+k,d);}catch(x){fail(x);}},
+  mon:e=>{let {y,m}=S.cal;m+=Number(e.d);if(m<0){m=11;y--;}if(m>11){m=0;y++;}S.cal={y,m};render();},
+  rec:e=>go('rec',{date:e.date}),'rec-new':e=>newRecForm(e.date),'rec-edit':e=>newRecForm(e.date),
+  heart:e=>{S.form.hearts=Number(e.n);render();},followed:()=>{S.form.followed=!S.form.followed;render();},
+  'rec-submit':async()=>{const f=S.form;if(S.busy)return;S.busy=true;render();
+    try{const old=S.records[f.date],plan=S.daily[f.date];let r=old?{...old}:{createdAt:Date.now()};
+      const newPhoto=f.img;
+      if(f.img){const im=await storeImage(f.img);if(old){await dropImage(old);await dropCut(old);}delete r.assetId;delete r.dataUrl;delete r._url;delete r.cutImgId;Object.assign(r,im);}
+      Object.assign(r,{hearts:f.hearts,memo:f.memo.trim(),items:f.items,followed:f.followed});
+      if(plan&&!old){r.pinId=plan.pinId;r.balance=plan.balance;r.formula=formulaFor(f.date,plan.balance);}
+      S.records[f.date]=r;await write('records/'+f.date,r);S.busy=false;S.form=null;S.stack=S.stack.filter(x=>x.name!=='rec');S.route={name:'rec',date:f.date};if(!S.stack.length)S.stack=[{name:'calendar'}];render();window.scrollTo(0,0);toast('달력에 남겼어요');if(newPhoto)runCut(f.date,newPhoto.blob);}catch(x){fail(x);}},
+  recut:e=>runCut(e.date,null),
+  'rec-del':e=>{S.sheet={type:'confirm',title:'이 기록을 지울까요?',text:'사진과 메모가 함께 지워져요.',yes:async()=>{const r=S.records[e.date];delete S.records[e.date];S.sheet=null;back();try{await remove('records/'+e.date);await dropImage(r);await dropCut(r);}catch(x){fail(x);}toast('기록을 지웠어요');}};render();},
+  sheet:e=>{S.sheet={type:e.s};render();},'sheet-close':()=>{S.sheet=null;render();},
+  'sheet-dim':(e,ev)=>{if(ev.target.classList.contains('dim')){S.sheet=null;render();}},
+  'confirm-yes':()=>S.sheet&&S.sheet.yes&&S.sheet.yes(),
+  'set-bal':async e=>{S.settings.balance=Number(e.v);render();try{await write('app/settings',S.settings);}catch(x){fail(x);}},
+  'board-save':async()=>{S.settings.boardUrl=(document.getElementById('sh-url').value||'').trim();S.sheet=null;render();toast('보드 주소를 저장했어요');try{await write('app/settings',S.settings);}catch(x){fail(x);}},
+  ob:e=>{S.route={name:'onboard',step:Number(e.step)};render();window.scrollTo(0,0);},
+  'backup-out':()=>exportBackup().catch(e=>{console.error(e);toast('백업 파일을 만들지 못했어요');}),
+  'ob-done':async()=>{S.settings.onboarded=true;S.stack=[];S.route={name:'home'};render();try{await write('app/settings',S.settings);}catch(x){fail(x);}}
+};
+$app.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');if(!el||el.disabled)return;const a=A[el.dataset.act];if(a&&el.tagName!=='INPUT')a(el.dataset,ev);});
+$app.addEventListener('input',ev=>{const t=ev.target;
+  if(t.id==='q'){S.q=t.value;const pos=t.selectionStart;render();const n=document.getElementById('q');n.focus();try{n.setSelectionRange(pos,pos);}catch(e){}}
+  else if(t.dataset.f&&S.form)S.form[t.dataset.f]=t.value;
+  else if(t.dataset.s)S.settings[t.dataset.s]=t.value.trim();
+  else if(t.id==='bal'){const formal=Number(t.value);t.style.setProperty('--p',(formal-20)/60*100+'%');document.getElementById('balv').textContent=`숲 ${100-formal} : 정장 ${formal}`;}
+});
+$app.addEventListener('change',async ev=>{const t=ev.target;
+  if(t.id==='bal'){const k=dkey(today()),d=S.daily[k];d.balance=100-Number(t.value);render();try{await write('daily/'+k,d);}catch(x){fail(x);}}
+  else if((t.id==='f-photo'||t.id==='f-cam')&&t.files&&t.files[0]&&S.form){try{const im=await shrink(t.files[0]);S.form.img=im;S.form.preview=im.preview;render();}catch(e){toast('이 사진은 열 수 없어요. 다른 사진을 골라 주세요');}}
+  else if(t.id==='f-backup'&&t.files&&t.files[0]){const f=t.files[0];t.value='';importBackup(f);}
+  else if(t.id==='f-many'&&t.files&&t.files.length){const files=[...t.files].slice(0,20);let ok=0;toast(`${files.length}장을 올리는 중이에요`);
+    for(const f of files){try{const im=await shrink(f);const st=await storeImage(im);await savePin({id:uid(),createdAt:Date.now(),saved:false,title:'',link:'',tags:[],ratio:Math.round(im.ratio*1000)/1000,...st});ok++;render();}catch(e){console.error(e);}}
+    toast(ok===files.length?`${ok}장을 보드에 담았어요`:`${ok}장을 담았고 ${files.length-ok}장은 올리지 못했어요`);}
+});
+window.addEventListener('hashchange',()=>{const n=location.hash.slice(1);if(TABS.some(t=>t[0]===n)&&S.route.name!==n&&S.settings.onboarded)go(n);});
+
+if('serviceWorker' in navigator&&location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(e=>console.warn('sw',e)));}
+(async function start(){
+  try{await loadAll();}catch(e){console.error(e);$app.innerHTML='<div class="emptybox"><h2>저장 공간을 열 수 없어요</h2><p>사파리의 개인정보 보호 브라우징을 끄고 다시 열어 주세요.</p></div>';return;}
+  const n=location.hash.slice(1);
+  if(!S.settings.onboarded)S.route={name:'onboard',step:0};
+  else S.route={name:TABS.some(t=>t[0]===n)?n:'home'};
+  render();
+})();
+</script>
+</body>
+</html>
