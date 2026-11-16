@@ -351,6 +351,26 @@ async function runCut(date,blob){
   finally{S.cutting.delete(date);render();}
 }
 
+/* ---------- 핀터레스트 보드 자동 등록 ----------
+   매일 아침 예약 작업이 보드의 핀 목록을 pins.json에 올린다.
+   앱을 열 때 새 핀만 받아 이 기기에 담고, 지운 핀은 다시 담지 않는다 */
+const PINIMG='https://i.pinimg.com/';
+async function fetchPinBlob(path){for(const size of ['736x','originals']){try{const r=await fetch(PINIMG+size+'/'+path,{mode:'cors'});if(r.ok)return await r.blob();}catch(e){}}throw new Error('pin fetch');}
+async function syncBoard(){
+  if(navigator.onLine===false)return;
+  let data;try{const r=await fetch('pins.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;data=await r.json();}catch(e){return;}
+  const have=new Set(S.pins.map(p=>p.pinPath).filter(Boolean)),removed=new Set(S.settings.removedPins||[]);
+  const todo=(data.pins||[]).filter(x=>x&&x.path&&!have.has(x.path)&&!removed.has(x.path));
+  if(!todo.length)return;
+  let n=0;const base=Date.now();
+  for(let i=todo.length-1;i>=0;i--){const x=todo[i];
+    try{const b=await fetchPinBlob(x.path);const url=URL.createObjectURL(b);let ratio=0.75;try{const im=await loadImg(url);ratio=Math.round(im.naturalWidth/im.naturalHeight*1000)/1000;}catch(e){}URL.revokeObjectURL(url);
+      const imgId=await storeBlob(b);S.pins.push({id:uid(),createdAt:base+(todo.length-i),saved:false,title:'',link:data.board||'',tags:[],ratio,imgId,pinPath:x.path,from:'board'});n++;
+    }catch(e){console.warn('board pin',x.path,e);}}
+  if(!n)return;
+  S.pins.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));await write('pins');render();toast(`보드에서 새 핀 ${n}장을 담았어요`);
+}
+
 /* ---------- 백업 ---------- */
 const blobToDataUrl=b=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b);});
 async function exportBackup(){
@@ -621,7 +641,7 @@ const A={
   pin:e=>go('pin',{id:e.id}),
   'pin-new':()=>newPinForm(null),'pin-edit':e=>newPinForm(pinById(e.id)),
   'pin-save':async e=>{const p=pinById(e.id);if(!p)return;p.saved=!p.saved;render();toast(p.saved?'내 서랍에 저장했어요':'저장을 풀었어요');try{await write('pins/'+p.id,p);}catch(x){fail(x);}},
-  'pin-del':e=>{S.sheet={type:'confirm',title:'이 핀을 지울까요?',text:'지운 핀은 되돌릴 수 없어요.',yes:async()=>{const p=pinById(e.id);S.pins=S.pins.filter(x=>x.id!==e.id);S.sheet=null;back();try{await remove('pins/'+e.id);await dropImage(p);}catch(x){fail(x);}toast('핀을 지웠어요');}};render();},
+  'pin-del':e=>{S.sheet={type:'confirm',title:'이 핀을 지울까요?',text:'지운 핀은 되돌릴 수 없어요.',yes:async()=>{const p=pinById(e.id);S.pins=S.pins.filter(x=>x.id!==e.id);if(p&&p.pinPath){S.settings.removedPins=[...new Set([...(S.settings.removedPins||[]),p.pinPath])];await write('app/settings');}S.sheet=null;back();try{await remove('pins/'+e.id);await dropImage(p);}catch(x){fail(x);}toast('핀을 지웠어요');}};render();},
   'pin-today':async e=>{const k=dkey(today());S.daily[k]={pinId:e.id,balance:(S.daily[k]&&S.daily[k].balance)||baseBalance(today()),chosen:false};S.stack=[{name:'home'}];S.route={name:'suggest'};render();window.scrollTo(0,0);try{await write('daily/'+k,S.daily[k]);}catch(x){fail(x);}},
   ftag:e=>{const t=S.form.tags,i=t.indexOf(e.tag);i<0?t.push(e.tag):t.splice(i,1);render();},
   fitem:e=>{const t=S.form.items,i=t.indexOf(e.tag);i<0?t.push(e.tag):t.splice(i,1);render();},
@@ -652,7 +672,7 @@ const A={
   'board-save':async()=>{S.settings.boardUrl=(document.getElementById('sh-url').value||'').trim();S.sheet=null;render();toast('보드 주소를 저장했어요');try{await write('app/settings',S.settings);}catch(x){fail(x);}},
   ob:e=>{S.route={name:'onboard',step:Number(e.step)};render();window.scrollTo(0,0);},
   'backup-out':()=>exportBackup().catch(e=>{console.error(e);toast('백업 파일을 만들지 못했어요');}),
-  'ob-done':async()=>{S.settings.onboarded=true;S.stack=[];S.route={name:'home'};render();try{await write('app/settings',S.settings);}catch(x){fail(x);}}
+  'ob-done':async()=>{S.settings.onboarded=true;S.stack=[];S.route={name:'home'};render();try{await write('app/settings',S.settings);}catch(x){fail(x);}syncBoard();}
 };
 $app.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');if(!el||el.disabled)return;const a=A[el.dataset.act];if(a&&el.tagName!=='INPUT')a(el.dataset,ev);});
 $app.addEventListener('input',ev=>{const t=ev.target;
@@ -678,6 +698,8 @@ if('serviceWorker' in navigator&&location.protocol!=='file:'){window.addEventLis
   if(!S.settings.onboarded)S.route={name:'onboard',step:0};
   else S.route={name:TABS.some(t=>t[0]===n)?n:'home'};
   render();
+  if(S.settings.onboarded)syncBoard();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.settings.onboarded)syncBoard();});
 })();
 </script>
 </body>
