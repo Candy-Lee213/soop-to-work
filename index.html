@@ -19,18 +19,23 @@
 <style>
 :root{
   /* 흑백 기본, 포인트는 살구 핑크와 베이지 두 가지. 한 열짜리 모바일 화면, 하단 탭 다섯 개 */
-  --ink:#222222; --paper:#ffffff; --sub:#666666; --mute:#959595;
+  --ink:#222222; --paper:#ffffff; --sub:#666666; --mute:#767676;
   --line:#eeeeee; --band:#f7f7f7; --border:#d5d5d5; --ph1:#ededed; --ph2:#e3e3e3;
-  --point:#e0a090; --beige:#f1eadb;
+  --point:#e0a090; --point-ink:#a85b45; --beige:#f1eadb;
+  /* 글자 크기: 11 탭 · 12 캡션 · 13 보조 · 15 본문 · 17 목록 제목 · 20 섹션 · 22 화면 제목 · 26 큰 제목 · 30 배너
+     여백: 4 단위(4 8 12 16 20 24 32 40), 화면 좌우 여백은 20 */
   --serif:"Noto Serif KR","Apple SD Gothic Neo",serif;
   --sans:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
   color-scheme:light;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{background:var(--band);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body{background:var(--band);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:inherit}
-input,textarea{font:inherit;color:inherit}
+input,textarea{font:inherit;color:inherit;caret-color:var(--point-ink)}
+::selection{background:var(--beige);color:var(--ink)}
+p{text-wrap:pretty}
+h1,h2,h3{text-wrap:balance;line-height:1.35}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 img{max-width:100%;display:block}
@@ -41,45 +46,46 @@ img{max-width:100%;display:block}
 .ic.s{width:20px;height:20px}.ic.xs{width:16px;height:16px}.ic.l{width:36px;height:36px}
 .ic.fill{fill:currentColor}
 .serif{font-family:var(--serif)}
-.mute{color:var(--mute)}.sub{color:var(--sub)}.point{color:var(--point)}
+.mute{color:var(--mute)}.sub{color:var(--sub)}.point{color:var(--point-ink)}
 
 /* 머리 */
-.top{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;min-height:54px}
-.top h1{font-family:var(--serif);font-size:24px;font-weight:500}
-.logo{display:flex;align-items:center;gap:6px;font-family:var(--serif);font-size:21px;font-weight:600}
+.top{display:flex;align-items:center;justify-content:space-between;padding:8px 20px;min-height:56px}
+.top h1{font-family:var(--serif);font-size:22px;font-weight:500}
+.logo{display:flex;align-items:center;gap:6px;font-family:var(--serif);font-size:20px;font-weight:600}
 .logo img{width:32px;height:34px;object-fit:contain;mix-blend-mode:multiply}
-.top .acts{display:flex;align-items:center;gap:14px}
-.nav{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;min-height:54px}
+.top .acts{display:flex;align-items:center;gap:16px}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:8px 13px;min-height:56px}
 .nav .t{font-size:15px;font-weight:500}
-.nav .save{font-weight:700;color:var(--point)}
-.iconbtn{display:flex;align-items:center;justify-content:center;min-width:32px;min-height:32px}
+.nav .save{font-weight:700;color:var(--point-ink);min-height:40px;padding:0 7px}
+.iconbtn{display:flex;align-items:center;justify-content:center;min-width:40px;min-height:40px}
+.top .iconbtn{margin-right:-7px}
 
 /* 하단 탭 */
 .tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:430px;background:var(--paper);border-top:1px solid #e5e5e5;display:flex;padding:10px 8px calc(14px + env(safe-area-inset-bottom));z-index:20}
-.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#8a8a8a}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--mute)}
 .tabbar button[aria-current="page"]{color:var(--ink);font-weight:700}
 
 /* 홈 배너 */
-.hero{background:var(--ink);color:#fff;padding:30px 24px 26px;display:flex;flex-direction:column;gap:18px}
+.hero{background:var(--ink);color:#fff;padding:32px 20px 24px;display:flex;flex-direction:column;gap:16px}
 .week{display:flex}
 .week span{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid #6e6e6e;margin-left:-1px;font-family:var(--serif);font-size:15px}
 .week span:first-child{margin-left:0}
 .week span.on{background:var(--beige);color:var(--ink);border-color:var(--beige)}
-.hero h2{font-family:var(--serif);font-size:32px;font-weight:500;line-height:1.35;text-wrap:balance}
-.hero p{color:#c4c4c4}
+.hero h2{font-family:var(--serif);font-size:30px;font-weight:500;line-height:1.35;text-wrap:balance}
+.hero p{color:#c4c4c4;margin-top:8px}
 .hero .meta{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#c4c4c4}
 .hero .meta b{color:#fff;font-weight:500;display:flex;align-items:center;gap:2px}
 .photo{background:var(--ph1) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:rgba(34,34,34,.45);font-size:12px;width:100%}
 .hero .photo{aspect-ratio:342/410}
-.hero .empty{border:1px dashed #6e6e6e;padding:36px 20px;text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center}
+.hero .empty{border:1px dashed #6e6e6e;padding:32px 20px;text-align:center;display:flex;flex-direction:column;gap:16px;align-items:center}
 
 /* 섹션 */
 .sec{display:flex;align-items:center;gap:4px;padding:32px 20px 16px;font-size:20px;font-weight:700}
 .sec .r{margin-left:auto;font-size:13px;font-weight:400;color:var(--mute)}
-.band{height:8px;background:var(--band);margin-top:28px}
+.band{height:8px;background:var(--band);margin-top:24px}
 .hscroll{display:flex;gap:12px;overflow-x:auto;padding:0 20px;scrollbar-width:none}
 .hscroll::-webkit-scrollbar{display:none}
-.card{flex:none;width:150px;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.4}
+.card{flex:none;width:150px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.4}
 .card .photo{aspect-ratio:3/4}
 .card small{font-size:12px;color:var(--mute)}
 .day{flex:none;display:flex;flex-direction:column;gap:6px;align-items:center;font-size:12px;color:var(--mute)}
@@ -87,40 +93,40 @@ img{max-width:100%;display:block}
 .day.today{color:var(--ink);font-weight:700}
 .day.today .photo{background:#fff;border:1px dashed var(--ink);color:var(--ink)}
 .list{padding:0 20px 24px}
-.item{display:flex;gap:16px;padding:18px 0;border-top:1px solid var(--line);align-items:center;width:100%}
+.item{display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--line);align-items:center;width:100%}
 .item:first-child{border-top:0}
-.item .num{font-family:var(--serif);font-size:30px;line-height:1.1;align-self:flex-start;min-width:22px}
+.item .num{font-family:var(--serif);font-size:26px;line-height:1.1;align-self:flex-start;min-width:22px}
 .item .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 .item .k{font-size:12px;color:var(--mute)}
-.item .k.on{color:var(--point);font-weight:700}
-.item .t{font-size:18px;font-weight:300;line-height:1.4}
+.item .k.on{color:var(--point-ink);font-weight:700}
+.item .t{font-size:17px;font-weight:300;line-height:1.4}
 .item .d{font-size:13px;color:var(--sub)}
 .item .photo{flex:none;width:72px;height:90px}
 .item .photo.sq{width:64px;height:64px}
 
 /* 버튼, 칩 */
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 18px;border:1px solid var(--border);font-weight:500;background:#fff;text-decoration:none}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 16px;border:1px solid var(--border);font-weight:500;background:#fff;text-decoration:none}
 .btn.solid{background:var(--ink);border-color:var(--ink);color:#fff}
 .btn.full{width:100%}
 .btn[disabled]{opacity:.45;cursor:default}
 .btn.sm{min-height:46px}
 .chips{display:flex;flex-wrap:wrap;gap:8px 8px}
-.chip{padding:8px 15px;border:1px solid var(--border);border-radius:20px;font-size:14px;background:#fff}
+.chip{padding:8px 16px;border:1px solid var(--border);border-radius:20px;font-size:15px;background:#fff}
 .chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .chip.off{opacity:.45}
 
 /* 상세 */
 .detail .photo{aspect-ratio:390/470}
-.pad{padding:26px 24px 8px;display:flex;flex-direction:column;gap:10px}
-.pad h2{font-family:var(--serif);font-size:27px;font-weight:500;line-height:1.4;text-wrap:balance}
-.steps{padding:0 24px}
+.pad{padding:24px 20px 8px;display:flex;flex-direction:column;gap:8px}
+.pad h2{font-family:var(--serif);font-size:26px;font-weight:500;line-height:1.35;text-wrap:balance}
+.steps{padding:0 20px}
 .step{display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--line)}
 .step:first-child{border-top:0}
-.step .k{font-family:var(--serif);font-size:22px;line-height:1.2}
+.step .k{font-family:var(--serif);font-size:20px;line-height:1.2}
 .step .t{font-size:17px;font-weight:300;line-height:1.4}
 .step .d{font-size:13px;color:var(--sub)}
-.bal{padding:20px 24px 28px;display:flex;flex-direction:column;gap:12px}
-.bal .h{display:flex;justify-content:space-between;font-size:14px;font-weight:500}
+.bal{padding:20px 20px 24px;display:flex;flex-direction:column;gap:12px}
+.bal .h{display:flex;justify-content:space-between;font-size:15px;font-weight:500}
 .bal .h span{font-family:var(--serif);font-weight:400}
 .bal .ends{display:flex;justify-content:space-between;font-size:12px;color:var(--mute)}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:24px;background:transparent}
@@ -129,26 +135,26 @@ input[type=range]::-moz-range-track{height:2px;background:var(--border)}
 input[type=range]::-moz-range-progress{height:2px;background:var(--point)}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--point);margin-top:-10px}
 input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid var(--point)}
-.bottom{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 20px calc(18px + env(safe-area-inset-bottom));display:flex;gap:8px;margin-top:auto}
+.bottom{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 20px calc(16px + env(safe-area-inset-bottom));display:flex;gap:8px;margin-top:auto}
 .bottom .btn.solid{flex:1}
 
 /* 발견 */
-.search{margin:10px 20px 20px;height:48px;border-radius:24px;background:var(--band);display:flex;align-items:center;padding:0 22px;gap:10px}
-.search input{flex:1;border:0;background:none;outline:none;min-width:0}
+.search{margin:12px 20px 20px;height:48px;border-radius:24px;background:var(--band);display:flex;align-items:center;padding:0 20px;gap:8px}
+.search input{flex:1;border:0;background:none;outline:none;min-width:0;font-size:16px} /* 16px 미만이면 아이폰이 입력할 때 화면을 확대한다 */
 .search input::placeholder{color:var(--mute)}
-.masonry{columns:2;column-gap:11px;padding:0 20px 28px}
-.pin{break-inside:avoid;margin-bottom:11px;display:block;width:100%}
+.masonry{columns:2;column-gap:12px;padding:0 20px 24px}
+.pin{break-inside:avoid;margin-bottom:12px;display:block;width:100%}
 .pin .photo{min-height:120px}
 .pin img{width:100%;background:var(--ph1)}
-.emptybox{padding:56px 36px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.emptybox{padding:56px 32px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .emptybox h2{font-family:var(--serif);font-size:22px;font-weight:500}
-.emptybox p{font-size:14px;color:var(--sub);line-height:1.7}
-.emptybox img{width:112px;height:auto;margin-bottom:6px;mix-blend-mode:multiply}
+.emptybox p{font-size:15px;color:var(--sub);line-height:1.6}
+.emptybox img{width:112px;height:auto;margin-bottom:4px;mix-blend-mode:multiply}
 
 /* 달력 */
-.month{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 20px 6px;font-family:var(--serif);font-size:19px;font-weight:500}
+.month{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 20px 0;font-family:var(--serif);font-size:17px;font-weight:500}
 .month button[disabled]{color:var(--border)}
-.stat{text-align:center;font-size:13px;color:var(--mute);padding-bottom:18px}
+.stat{text-align:center;font-size:13px;color:var(--mute);padding-bottom:16px}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:12px 3px;padding:0 12px}
 .cal .w{text-align:center;font-size:12px;line-height:22px;color:var(--mute)}
 /* 날짜는 칸 위에 작게, 사진 칸은 가리는 것 없이 세로로 길게 */
@@ -166,51 +172,51 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .hearts button{display:flex}
 
 /* 폼 */
-.form{padding:6px 20px 20px;display:flex;flex-direction:column;gap:22px}
-.drop{border:1px dashed var(--mute);background:var(--band) center/contain no-repeat;aspect-ratio:350/330;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--sub);font-size:14px}
+.form{padding:8px 20px 20px;display:flex;flex-direction:column;gap:24px}
+.drop{border:1px dashed var(--mute);background:var(--band) center/contain no-repeat;aspect-ratio:350/330;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--sub);font-size:15px}
 .drop.has{border-style:solid;border-color:var(--line);background-size:cover}
-.two{display:flex;gap:8px;margin-top:10px}
+.two{display:flex;gap:8px;margin-top:8px}
 .two>*{flex:1}
-.field{display:flex;flex-direction:column;gap:10px}
-.field>label,.field>.lb{font-size:14px;font-weight:500}
+.field{display:flex;flex-direction:column;gap:8px}
+.field>label,.field>.lb{font-size:15px;font-weight:500}
 .field input[type=text],.field input[type=url]{border:0;border-bottom:1px solid var(--ink);padding:8px 0;font-size:17px;outline:none;border-radius:0;background:none;width:100%}
 .field input.serif{font-family:var(--serif)}
 .field small{font-size:12px;color:var(--mute)}
-.check{display:flex;gap:12px;align-items:center;background:var(--beige);padding:14px 16px;width:100%}
+.check{display:flex;gap:12px;align-items:center;background:var(--beige);padding:12px 16px;width:100%}
 .check .box{width:22px;height:22px;border:1px solid var(--mute);background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;flex:none}
 .check.on .box{background:var(--point);border-color:var(--point)}
 .check b{font-weight:500;display:block}
 .check small{font-size:12px;color:var(--sub)}
 
 /* 처음 */
-.ob{flex:1;display:flex;flex-direction:column;padding:40px 24px 0;gap:16px}
-.ob h2{font-family:var(--serif);font-size:28px;font-weight:500;line-height:1.4;text-wrap:balance}
-.ob .n{font-family:var(--serif);font-size:14px;color:var(--mute)}
-.opt{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border:1px solid var(--border);width:100%}
+.ob{flex:1;display:flex;flex-direction:column;padding:40px 20px 0;gap:16px}
+.ob h2{font-family:var(--serif);font-size:26px;font-weight:500;line-height:1.35;text-wrap:balance}
+.ob .n{font-family:var(--serif);font-size:15px;color:var(--mute)}
+.opt{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border:1px solid var(--border);width:100%}
 .opt.on{border:1.5px solid var(--ink);background:var(--beige)}
-.opt b{font-family:var(--serif);font-size:19px;font-weight:500;display:block}
+.opt b{font-family:var(--serif);font-size:17px;font-weight:500;display:block}
 .opt small{font-size:13px;color:var(--sub)}
 .opt .ic{color:var(--point);visibility:hidden}.opt.on .ic{visibility:visible}
-.splash{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:40px 24px}
+.splash{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:40px 20px}
 .splash img{width:180px;height:auto;mix-blend-mode:multiply}
-.splash h1{font-family:var(--serif);font-size:34px;font-weight:600}
-.foot{padding:24px 24px calc(40px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;align-items:center}
+.splash h1{font-family:var(--serif);font-size:30px;font-weight:600}
+.foot{padding:24px 20px calc(40px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;align-items:center}
 
 /* 내 서랍 */
-.quick{margin:10px 20px 0;border:1px solid var(--border);border-radius:10px;display:flex;padding:26px 0}
-.quick button{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;font-size:14px}
-.set{display:flex;justify-content:space-between;align-items:center;padding:17px 0;border-top:1px solid var(--line);font-size:16px;font-weight:300;width:100%}
+.quick{margin:12px 20px 0;border:1px solid var(--border);border-radius:10px;display:flex;padding:24px 0}
+.quick button{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:15px}
+.set{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid var(--line);font-size:17px;font-weight:300;width:100%}
 .set:first-child{border-top:0}
 .set span{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;color:var(--mute)}
 
 /* 시트, 알림 */
 .dim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40;display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:#fff;width:100%;max-width:430px;padding:28px 24px calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px;max-height:86%;overflow:auto}
+.sheet{background:#fff;width:100%;max-width:430px;padding:24px 20px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px;max-height:86%;overflow:auto}
 .sheet h3{font-family:var(--serif);font-size:22px;font-weight:500}
-.sheet p{font-size:14px;color:var(--sub);line-height:1.7}
-.sheet ol{padding-left:20px;font-size:14px;color:var(--sub);line-height:1.9}
-.cutting{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sub);padding:10px 24px;background:var(--band)}
-.toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;font-size:13px;z-index:60;max-width:90%;text-align:center}
+.sheet p{font-size:15px;color:var(--sub);line-height:1.6}
+.sheet ol{padding-left:20px;font-size:15px;color:var(--sub);line-height:1.7}
+.cutting{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sub);padding:8px 20px;background:var(--band)}
+.toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 16px;font-size:13px;z-index:60;max-width:90%;text-align:center}
 .note{margin:0 20px;padding:10px 14px;background:var(--beige);font-size:12px;color:var(--sub)}
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .2s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}}
 </style>
@@ -412,7 +418,7 @@ function vHome(){
   <section class="hero">${week}<div><h2>${plan&&plan.chosen?'오늘은 이렇게<br>입기로 했어요':'오늘은 이 옷<br>어떠세요?'}</h2><p>${f?esc(f.t)+'.':'숲과 사무실 사이의 한 벌.'}</p></div>${hero}</section>
   ${note()?'<div style="height:12px"></div>'+note():''}
   <h2 class="sec"><button data-act="tab" data-to="discover" style="display:flex;align-items:center;gap:4px">내 보드에서 ${ic('next','s')}</button></h2>
-  ${pins.length?`<div class="hscroll">${pins.map(p=>`<button class="card" data-act="pin" data-id="${p.id}"><span class="photo"${bg(p)}></span><span>${esc(pinTitle(p))}</span><small>${esc((p.tags||[])[0]||'')}</small></button>`).join('')}</div>`:`<p class="sub" style="padding:0 20px;font-size:14px">발견 탭에서 핀을 올리면 여기에 보여요.</p>`}
+  ${pins.length?`<div class="hscroll">${pins.map(p=>`<button class="card" data-act="pin" data-id="${p.id}"><span class="photo"${bg(p)}></span><span>${esc(pinTitle(p))}</span><small>${esc((p.tags||[])[0]||'')}</small></button>`).join('')}</div>`:`<p class="sub" style="padding:0 20px;font-size:15px">발견 탭에서 핀을 올리면 여기에 보여요.</p>`}
   <div class="band"></div>
   <h2 class="sec"><button data-act="tab" data-to="calendar" style="display:flex;align-items:center;gap:4px">최근 기록 ${ic('next','s')}</button></h2>
   <div class="hscroll" style="gap:8px">
@@ -435,7 +441,7 @@ function vSuggest(){
   <div class="pad"><span class="mute" style="font-size:12px">오늘의 핀 · 내 보드에서</span><h2>${esc(pinTitle(pin))}</h2>
    ${pin.link?`<a href="${esc(pin.link)}" target="_blank" rel="noopener" class="sub" style="font-size:13px;display:flex;align-items:center;gap:2px;text-decoration:none">핀터레스트에서 보기 ${ic('link','xs')}</a>`:''}</div>
   <div class="band" style="margin-top:20px"></div>
-  <div class="pad" style="padding-top:28px"><h3 style="font-size:20px;font-weight:700">세미 정장으로 옮기면</h3><span class="mute" style="font-size:13px">공식 ${f.n}  ${esc(f.t)}</span></div>
+  <div class="pad" style="padding-top:24px"><h3 style="font-size:20px;font-weight:700">세미 정장으로 옮기면</h3><span class="mute" style="font-size:13px">공식 ${f.n}  ${esc(f.t)}</span></div>
   <div class="steps">${f.steps.map(s=>`<div class="step"><span class="k">${esc(s[0])}</span><span><span class="t" style="display:block">${esc(s[1])}</span><span class="d">${esc(s[2])}</span></span></div>`).join('')}</div>
   <div class="bal"><div class="h"><label for="bal">오늘의 밸런스</label><span id="balv">숲 ${plan.balance} : 정장 ${100-plan.balance}</span></div>
    <input type="range" id="bal" min="20" max="80" step="10" value="${100-plan.balance}" style="--p:${(100-plan.balance-20)/60*100}%" data-act="bal">
@@ -452,7 +458,7 @@ function vPin(pin){
   <div class="pad"><h2>${esc(pinTitle(pin))}</h2>
    ${(pin.tags||[]).length?`<div class="chips">${pin.tags.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>`:''}
    ${pin.link?`<a href="${esc(pin.link)}" target="_blank" rel="noopener" class="sub" style="font-size:13px;display:flex;align-items:center;gap:2px;text-decoration:none">핀터레스트에서 보기 ${ic('link','xs')}</a>`:''}</div>
-  <div style="padding:20px 24px 28px;display:flex;gap:8px"><button class="btn sm" data-act="pin-edit" data-id="${pin.id}">${ic('pen','s')} 고치기</button><button class="btn sm" data-act="pin-del" data-id="${pin.id}">${ic('trash','s')} 지우기</button></div>
+  <div style="padding:20px 20px 24px;display:flex;gap:8px"><button class="btn sm" data-act="pin-edit" data-id="${pin.id}">${ic('pen','s')} 고치기</button><button class="btn sm" data-act="pin-del" data-id="${pin.id}">${ic('trash','s')} 지우기</button></div>
   <div class="bottom"><button class="btn solid" data-act="pin-today" data-id="${pin.id}">이 핀으로 오늘 입기</button></div>
   </div>`;
 }
@@ -465,7 +471,7 @@ function vDiscover(){
   return `<div class="view">
   <div class="search">${ic('search','s')}<input id="q" type="text" placeholder="핀, 키워드를 검색하세요" value="${esc(S.q)}" aria-label="핀 검색" autocomplete="off"></div>
   <div class="chips" style="padding:0 20px">${tags.map(t=>`<button class="chip ${S.tag===t?'on':''}" data-act="tag" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div>
-  <h2 class="sec" style="padding-top:36px">내 보드의 핀 <span class="r">${S.pins.length?`${list.length}개`:''}</span></h2>
+  <h2 class="sec" style="padding-top:32px">내 보드의 핀 <span class="r">${S.pins.length?`${list.length}개`:''}</span></h2>
   <div style="padding:0 20px 20px;display:flex;gap:8px"><button class="btn sm" style="flex:1" data-act="pin-new">${ic('plus','s')} 핀 올리기</button><label class="btn sm" style="flex:1;cursor:pointer">여러 장 한꺼번에<input type="file" id="f-many" accept="image/*" multiple hidden></label></div>
   ${S.settings.boardUrl?`<a class="sub" href="${esc(S.settings.boardUrl)}" target="_blank" rel="noopener" style="padding:0 20px 20px;font-size:13px;display:flex;align-items:center;gap:2px;text-decoration:none">내 핀터레스트 보드 열기 ${ic('link','xs')}</a>`:''}
   ${list.length?`<div class="masonry" id="masonry">${list.map(p=>`<button class="pin" data-act="pin" data-id="${p.id}" aria-label="${esc(pinTitle(p))}">${src(p)?`<img src="${esc(src(p))}" alt="" loading="lazy"${p.ratio?` style="aspect-ratio:${p.ratio}"`:''}>`:`<span class="photo">사진 없음</span>`}</button>`).join('')}</div>`
@@ -488,7 +494,7 @@ function vPinForm(){
 
 function vCloset(){
   return `<div class="view">
-  <header class="top"><h1>옷장</h1><span class="mute" style="display:flex;align-items:center;gap:4px;font-size:14px">${ic('plus','s')}등록</span></header>
+  <header class="top"><h1>옷장</h1><span class="mute" style="display:flex;align-items:center;gap:4px;font-size:15px">${ic('plus','s')}등록</span></header>
   <div class="chips" style="padding:6px 20px 0">${['전체','아우터','상의','하의','원피스','신발','소품'].map(t=>`<span class="chip off">${t}</span>`).join('')}</div>
   <div class="emptybox" style="padding-top:64px"><img src="clay.jpg" alt=""><h2>옷장은 아직 비어 있어요</h2><p>한 벌씩 찍어 채워 갈 수 있게 준비하고 있어요.<br>그동안은 내 보드의 핀으로<br>오늘의 옷을 제안해 드릴게요.</p><button class="btn" data-act="tab" data-to="discover">발견에서 핀 둘러보기</button></div>
   </div>${tabbar('closet')}`;
@@ -513,7 +519,7 @@ function vCalendar(){
   <div style="padding:20px 20px 0"><button class="btn solid full" data-act="${S.records[tk]?'rec':'rec-new'}" data-date="${tk}">${ic('cam','s')} ${S.records[tk]?'오늘 기록 보기':'오늘 입은 옷 기록하기'}</button></div>
   ${note()?'<div style="height:16px"></div>'+note():''}
   <div class="band"></div><h2 class="sec">지난 기록</h2>
-  <div class="list">${past.length?past.map(k=>{const r=S.records[k];return `<button class="item" data-act="rec" data-date="${k}"><span class="tx"><span class="k">${longDate(fromKey(k))}</span><span class="t">${esc(recTitle(r))}</span><span style="display:flex;gap:10px;align-items:center">${hearts(r.hearts||0,'xs')}${r.balance?`<span class="serif mute" style="font-size:12px">숲 ${r.balance} : 정장 ${100-r.balance}</span>`:''}</span></span><span class="photo"${tbg(r)}></span></button>`;}).join(''):'<p class="sub" style="font-size:14px">첫 기록을 남기면 여기에 쌓여요.</p>'}</div>
+  <div class="list">${past.length?past.map(k=>{const r=S.records[k];return `<button class="item" data-act="rec" data-date="${k}"><span class="tx"><span class="k">${longDate(fromKey(k))}</span><span class="t">${esc(recTitle(r))}</span><span style="display:flex;gap:8px;align-items:center">${hearts(r.hearts||0,'xs')}${r.balance?`<span class="serif mute" style="font-size:12px">숲 ${r.balance} : 정장 ${100-r.balance}</span>`:''}</span></span><span class="photo"${tbg(r)}></span></button>`;}).join(''):'<p class="sub" style="font-size:15px">첫 기록을 남기면 여기에 쌓여요.</p>'}</div>
   </div>${tabbar('calendar')}`;
 }
 
@@ -525,8 +531,8 @@ function vRecForm(){
    <div><div class="drop ${f.preview?'has':''}"${f.preview?` style="background-image:url('${esc(f.preview)}')"`:''}>${f.preview?'':ic('cam','l')+'<span>오늘 입은 옷을 찍어 주세요</span>'}</div>
     <div class="two"><label class="btn sm" style="cursor:pointer">${ic('cam','s')} 사진 찍기<input type="file" id="f-cam" accept="image/*" capture="environment" hidden></label><label class="btn sm" style="cursor:pointer">앨범에서 고르기<input type="file" id="f-photo" accept="image/*" hidden></label></div></div>
    ${pin?`<button class="check ${f.followed?'on':''}" data-act="followed" aria-pressed="${f.followed}"><span class="box">${ic('check','xs')}</span><span><b>이날의 제안대로 입었어요</b><small>${esc(pinTitle(pin))}</small></span></button>`:''}
-   <p class="mute" style="font-size:12px;margin-top:-12px">사진 달력에는 사진에서 인물만 따서 올려요.</p>
-   <div class="field"><span class="lb">오늘 옷, 마음에 들었나요?</span><div style="display:flex;align-items:center;gap:14px"><span class="hearts" role="group" aria-label="만족도">${[1,2,3].map(i=>`<button class="${i<=f.hearts?'on':''}" data-act="heart" data-n="${i}" aria-label="하트 ${i}개" aria-pressed="${i<=f.hearts}">${ic('heart','l'+(i<=f.hearts?' fill':''))}</button>`).join('')}</span><span class="sub" style="font-size:13px">${HEART_WORD[f.hearts]}</span></div></div>
+   <p class="mute" style="font-size:12px;margin-top:-16px">사진 달력에는 사진에서 인물만 따서 올려요.</p>
+   <div class="field"><span class="lb">오늘 옷, 마음에 들었나요?</span><div style="display:flex;align-items:center;gap:12px"><span class="hearts" role="group" aria-label="만족도">${[1,2,3].map(i=>`<button class="${i<=f.hearts?'on':''}" data-act="heart" data-n="${i}" aria-label="하트 ${i}개" aria-pressed="${i<=f.hearts}">${ic('heart','l'+(i<=f.hearts?' fill':''))}</button>`).join('')}</span><span class="sub" style="font-size:13px">${HEART_WORD[f.hearts]}</span></div></div>
    <div class="field"><label for="r-memo">한 줄 메모</label><input class="serif" type="text" id="r-memo" data-f="memo" value="${esc(f.memo)}" placeholder="재킷 덕분에 회의에서도 편했다." maxlength="80"></div>
    <div class="field"><span class="lb">입은 것</span><div class="chips">${ITEMS.map(t=>`<button class="chip ${f.items.includes(t)?'on':''}" data-act="fitem" data-tag="${esc(t)}" aria-pressed="${f.items.includes(t)}">${esc(t)}</button>`).join('')}</div></div>
   </div>
@@ -540,12 +546,12 @@ function vRec(){
   return `<div class="view notab detail">
   <header class="nav"><button class="iconbtn" data-act="back" aria-label="뒤로">${ic('back')}</button><span class="t">${longDate(fromKey(k))}</span><button class="iconbtn" data-act="rec-edit" data-date="${k}" aria-label="고치기">${ic('pen')}</button></header>
   ${src(r)?`<img src="${esc(src(r))}" alt="이날 입은 옷" style="width:100%">`:`<div class="photo">사진 없이 남긴 기록</div>`}
-  <div class="pad" style="gap:14px;padding-bottom:26px"><div style="display:flex;justify-content:space-between;align-items:center">${hearts(r.hearts||0,'')}${r.balance?`<span class="serif" style="font-size:14px">숲 ${r.balance} : 정장 ${100-r.balance}</span>`:''}</div>
-   <h2 style="font-size:25px">${esc(recTitle(r))}</h2>${r.memo&&r.items&&r.items.length?`<p class="sub" style="line-height:1.75">${esc(r.memo)}</p>`:''}
+  <div class="pad" style="gap:12px;padding-bottom:24px"><div style="display:flex;justify-content:space-between;align-items:center">${hearts(r.hearts||0,'')}${r.balance?`<span class="serif" style="font-size:15px">숲 ${r.balance} : 정장 ${100-r.balance}</span>`:''}</div>
+   <h2 style="font-size:26px">${esc(recTitle(r))}</h2>${r.memo&&r.items&&r.items.length?`<p class="sub" style="line-height:1.6">${esc(r.memo)}</p>`:''}
    ${(r.items||[]).length?`<div class="chips">${r.items.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>`:''}</div>
   ${pin?`<div class="band" style="margin-top:0"></div><h2 class="sec">이날의 제안</h2><div class="list"><button class="item" data-act="pin" data-id="${pin.id}"><span class="photo"${bg(pin)}></span><span class="tx">${f?`<span class="k">공식 ${f.n}  ${esc(f.t)}</span>`:''}<span class="t" style="font-size:17px">${esc(pinTitle(pin))}</span><span class="k">${r.followed?'제안대로 입었어요':'제안과 다르게 입었어요'}</span></span>${ic('next','s')}</button></div>`:''}
   ${S.cutting.has(k)?'<p class="cutting">사진에서 인물만 따는 중이에요…</p>':''}
-  <div style="padding:8px 24px 32px;display:flex;gap:8px;flex-wrap:wrap">${src(r)?`<button class="btn sm" data-act="recut" data-date="${k}"${S.cutting.has(k)?' disabled':''}>인물만 다시 따기</button>`:''}<button class="btn sm" data-act="rec-del" data-date="${k}">${ic('trash','s')} 이 기록 지우기</button></div>
+  <div style="padding:8px 20px 32px;display:flex;gap:8px;flex-wrap:wrap">${src(r)?`<button class="btn sm" data-act="recut" data-date="${k}"${S.cutting.has(k)?' disabled':''}>인물만 다시 따기</button>`:''}<button class="btn sm" data-act="rec-del" data-date="${k}">${ic('trash','s')} 이 기록 지우기</button></div>
   </div>`;
 }
 
@@ -555,17 +561,17 @@ function vDrawer(){
   <header class="top"><h1>내 서랍</h1></header>
   <div class="quick"><button data-act="rec-new" data-date="${dkey(today())}">${ic('cam','')}기록하기</button><button data-act="saved">${ic('mark','')}저장한 핀</button><button data-act="sheet" data-s="balance">${ic('scale','')}밸런스</button></div>
   <h2 class="sec"><button data-act="saved" style="display:flex;align-items:center;gap:4px">저장한 핀 ${ic('next','s')}</button></h2>
-  ${saved.length?`<div class="hscroll">${saved.map(p=>`<button class="card" style="width:130px" data-act="pin" data-id="${p.id}"><span class="photo"${bg(p)}></span><span>${esc(pinTitle(p))}</span></button>`).join('')}</div>`:`<p class="sub" style="padding:0 20px;font-size:14px">핀 화면의 책갈피를 누르면 여기에 모여요.</p>`}
+  ${saved.length?`<div class="hscroll">${saved.map(p=>`<button class="card" style="width:130px" data-act="pin" data-id="${p.id}"><span class="photo"${bg(p)}></span><span>${esc(pinTitle(p))}</span></button>`).join('')}</div>`:`<p class="sub" style="padding:0 20px;font-size:15px">핀 화면의 책갈피를 누르면 여기에 모여요.</p>`}
   <div class="band"></div><h2 class="sec">아주 좋았던 날</h2>
-  ${best.length?`<div class="hscroll" style="gap:8px">${best.map(k=>{const d=fromKey(k);return `<button class="day" data-act="rec" data-date="${k}"><span class="photo" style="width:72px;height:96px;${cutSrc(S.records[k])?`background-image:url('${esc(cutSrc(S.records[k]))}');background-size:contain;background-position:center bottom;background-color:var(--band)`:(src(S.records[k])?`background-image:url('${esc(src(S.records[k]))}')`:'')}"></span><span class="serif">${d.getMonth()+1}.${d.getDate()}</span></button>`;}).join('')}</div>`:`<p class="sub" style="padding:0 20px;font-size:14px">하트 세 개를 준 날이 여기에 모여요.</p>`}
+  ${best.length?`<div class="hscroll" style="gap:8px">${best.map(k=>{const d=fromKey(k);return `<button class="day" data-act="rec" data-date="${k}"><span class="photo" style="width:72px;height:96px;${cutSrc(S.records[k])?`background-image:url('${esc(cutSrc(S.records[k]))}');background-size:contain;background-position:center bottom;background-color:var(--band)`:(src(S.records[k])?`background-image:url('${esc(src(S.records[k]))}')`:'')}"></span><span class="serif">${d.getMonth()+1}.${d.getDate()}</span></button>`;}).join('')}</div>`:`<p class="sub" style="padding:0 20px;font-size:15px">하트 세 개를 준 날이 여기에 모여요.</p>`}
   <div class="band"></div><h2 class="sec">설정</h2>
   <div class="list">
-   <button class="set" data-act="sheet" data-s="board">핀터레스트 보드<span>${S.settings.boardUrl?'<b class="point" style="font-weight:400">주소 저장됨</b>':'없음'} ${ic('next','xs')}</span></button>
+   <button class="set" data-act="sheet" data-s="board">핀터레스트 보드<span>${S.settings.boardUrl?'<b class="point" style="font-weight:500">주소 저장됨</b>':'없음'} ${ic('next','xs')}</span></button>
    <button class="set" data-act="sheet" data-s="balance">평소 밸런스<span>숲 ${b} : 정장 ${100-b} ${ic('next','xs')}</span></button>
    <button class="set" data-act="sheet" data-s="install">홈 화면에 추가하는 법<span>${ic('next','xs')}</span></button>
   </div>
   <div class="band" style="margin-top:4px"></div><h2 class="sec">백업</h2>
-  <p class="sub" style="padding:0 20px 8px;font-size:13px;line-height:1.7">핀과 기록은 이 휴대폰에만 저장돼요. 브라우저 데이터를 지우거나 휴대폰을 바꾸면 사라지니, 가끔 백업 파일을 내려받아 두세요.</p>
+  <p class="sub" style="padding:0 20px 8px;font-size:13px;line-height:1.6">핀과 기록은 이 휴대폰에만 저장돼요. 브라우저 데이터를 지우거나 휴대폰을 바꾸면 사라지니, 가끔 백업 파일을 내려받아 두세요.</p>
   <div class="list">
    <button class="set" data-act="backup-out">백업 파일 내려받기<span>${ic('next','xs')}</span></button>
    <label class="set" style="cursor:pointer">백업 파일 불러오기<span>${ic('next','xs')}</span><input type="file" id="f-backup" accept="application/json,.json" hidden></label>
@@ -578,10 +584,10 @@ const balOpts=cur=>BAL.map(([v,t,d])=>`<button class="opt ${cur===v?'on':''}" da
 function vOnboard(){
   const st=S.route.step||0;
   if(st===0)return `<div class="view notab"><div class="splash"><img src="leaf.jpg" alt=""><h1>숲으로 출근</h1><p class="sub">모리걸과 세미 정장,<br>그 사이의 한 벌</p></div><div class="foot"><button class="btn solid full" data-act="ob" data-step="1">시작하기</button><span class="mute" style="font-size:12px">혼자 쓰는 옷 일기</span></div></div>`;
-  if(st===1)return `<div class="view notab"><div class="ob"><span class="n">1 / 2</span><h2>영감을 모으는<br>핀터레스트 보드를<br>알려 주세요</h2><p class="sub" style="font-size:14px">보드로 바로 가는 길을 만들어 둘게요. 핀 사진은 발견 탭에서 직접 올리면 홈과 발견에 나타나요.</p>
+  if(st===1)return `<div class="view notab"><div class="ob"><span class="n">1 / 2</span><h2>영감을 모으는<br>핀터레스트 보드를<br>알려 주세요</h2><p class="sub" style="font-size:15px">보드로 바로 가는 길을 만들어 둘게요. 핀 사진은 발견 탭에서 직접 올리면 홈과 발견에 나타나요.</p>
     <div class="field" style="padding-top:20px"><label for="ob-url" class="mute" style="font-size:12px;font-weight:400">보드 주소</label><input type="url" id="ob-url" data-s="boardUrl" value="${esc(S.settings.boardUrl)}" placeholder="https://pin.it/…" inputmode="url"><small>나중에 내 서랍에서 바꿀 수 있어요.</small></div></div>
     <div class="foot"><button class="btn solid full" data-act="ob" data-step="2">다음</button></div></div>`;
-  return `<div class="view notab"><div class="ob"><span class="n">2 / 2</span><h2>평소엔 어느 쪽에<br>가깝게 입고 싶나요?</h2><p class="sub" style="font-size:14px">매일의 제안이 이 비율을 기준으로 만들어져요. 언제든 바꿀 수 있어요.</p><div style="display:flex;flex-direction:column;gap:12px;padding-top:16px">${balOpts(S.settings.balance)}</div></div>
+  return `<div class="view notab"><div class="ob"><span class="n">2 / 2</span><h2>평소엔 어느 쪽에<br>가깝게 입고 싶나요?</h2><p class="sub" style="font-size:15px">매일의 제안이 이 비율을 기준으로 만들어져요. 언제든 바꿀 수 있어요.</p><div style="display:flex;flex-direction:column;gap:12px;padding-top:16px">${balOpts(S.settings.balance)}</div></div>
     <div class="foot"><button class="btn solid full" data-act="ob-done">숲으로 출근하기</button></div></div>`;
 }
 
