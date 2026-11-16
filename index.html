@@ -294,7 +294,7 @@ async function loadAll(){
   for(const id of keys||[]){const b=await blobGet(id);if(b)URLS.set(id,URL.createObjectURL(b));}
   try{if(navigator.storage&&navigator.storage.persist)await navigator.storage.persist();}catch(e){}
 }
-const src=o=>o&&o.imgId?(URLS.get(o.imgId)||''):'';
+const src=o=>o?(o.imgId?(URLS.get(o.imgId)||o.remote||''):(o.remote||'')):'';
 const cutSrc=o=>o&&o.cutImgId?(URLS.get(o.cutImgId)||''):'';
 const bg=o=>{const u=src(o);return u?` style="background-image:url('${esc(u)}')"`:'';};
 /* 기록 썸네일: 누끼 사진이 있으면 그것을, 없으면 원래 사진을 */
@@ -364,9 +364,11 @@ async function syncBoard(){
   if(!todo.length)return;
   let n=0;const base=Date.now();
   for(let i=todo.length-1;i>=0;i--){const x=todo[i];
-    try{const b=await fetchPinBlob(x.path);const url=URL.createObjectURL(b);let ratio=0.75;try{const im=await loadImg(url);ratio=Math.round(im.naturalWidth/im.naturalHeight*1000)/1000;}catch(e){}URL.revokeObjectURL(url);
-      const imgId=await storeBlob(b);S.pins.push({id:uid(),createdAt:base+(todo.length-i),saved:false,title:'',link:data.board||'',tags:[],ratio,imgId,pinPath:x.path,from:'board'});n++;
-    }catch(e){console.warn('board pin',x.path,e);}}
+    const remote=PINIMG+'736x/'+x.path;let imgId=null,ratio=0.75;
+    /* 이미지 파일을 기기에 받아 두고, 서버가 허락하지 않으면 핀터레스트 주소로 바로 보여 준다 */
+    try{const b=await fetchPinBlob(x.path);const url=URL.createObjectURL(b);try{const im=await loadImg(url);ratio=Math.round(im.naturalWidth/im.naturalHeight*1000)/1000;}catch(e){}URL.revokeObjectURL(url);imgId=await storeBlob(b);}
+    catch(e){try{const im=await loadImg(remote);ratio=Math.round(im.naturalWidth/im.naturalHeight*1000)/1000;}catch(e2){console.warn('board pin',x.path,e2);continue;}}
+    S.pins.push({id:uid(),createdAt:base+(todo.length-i),saved:false,title:'',link:data.board||'',tags:[],ratio,imgId,remote,pinPath:x.path,from:'board'});n++;}
   if(!n)return;
   S.pins.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));await write('pins');render();toast(`보드에서 새 핀 ${n}장을 담았어요`);
 }
