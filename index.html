@@ -268,7 +268,7 @@ const FORMULAS=[
  {n:'④',t:'한 겹만 더',d:'셔츠 위 니트 조끼, 원피스 위 가디건',k:'겹',steps:[['안','늘 입던 셔츠와 하의는 그대로','기본은 세미 정장'],['겹','그 위에 니트 조끼나 얇은 가디건 하나','핀의 겹쳐 입기를 한 겹만 빌려 와요'],['끝','소매와 밑단을 살짝 보이게','겹이 보여야 숲의 느낌이 나요']]},
  {n:'⑤',t:'작은 것으로',d:'둥근 카라, 양말과 로퍼, 스카프, 가죽 크로스백',k:'소품',steps:[['옷','옷은 평소의 세미 정장 그대로','미팅이 있는 날에도 안전해요'],['목','핀에서 본 스카프나 둥근 카라 하나','얼굴 가까이에 숲을 둬요'],['발','양말과 로퍼, 또는 가죽 크로스백','작은 것 하나면 충분해요']]}
 ];
-const PIN_TAGS=['레이어드','린넨','가디건','원피스+재킷','롱스커트','로퍼','니트 조끼','둥근 카라','스카프','봄','여름','가을','겨울'];
+const PIN_TAGS=['레이어드','가디건','니트','니트 조끼','셔츠','둥근 카라','원피스+재킷','코트','롱스커트','플리츠','와이드 팬츠','린넨','로퍼','부츠','스카프','봄','여름','가을','겨울'];
 const ITEMS=['재킷','가디건','셔츠','블라우스','니트','원피스','롱스커트','슬랙스','로퍼','스카프'];
 const HEART_WORD=['','괜찮았어요','좋았어요','아주 좋았어요'];
 const TABS=[['home','홈','home'],['discover','발견','search'],['closet','옷장','hanger'],['calendar','기록','cal'],['drawer','내 서랍','drawer']];
@@ -359,6 +359,12 @@ async function fetchPinBlob(path){for(const size of ['736x','originals']){try{co
 async function syncBoard(){
   if(navigator.onLine===false)return;
   let data;try{const r=await fetch('pins.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;data=await r.json();}catch(e){return;}
+  /* 이미 담긴 보드 핀에 제목·키워드가 비어 있으면 목록의 것으로 채운다 (직접 고친 것은 그대로 둔다) */
+  const meta=new Map((data.pins||[]).filter(x=>x&&x.path).map(x=>[x.path,x]));let filled=0;
+  for(const p of S.pins){const m=p.pinPath&&meta.get(p.pinPath);if(!m)continue;
+    if(!p.title&&m.title){p.title=m.title;filled++;}
+    if((!p.tags||!p.tags.length)&&Array.isArray(m.tags)&&m.tags.length){p.tags=[...m.tags];filled++;}}
+  if(filled){await write('pins');render();}
   const have=new Set(S.pins.map(p=>p.pinPath).filter(Boolean)),removed=new Set(S.settings.removedPins||[]);
   const todo=(data.pins||[]).filter(x=>x&&x.path&&!have.has(x.path)&&!removed.has(x.path));
   if(!todo.length)return;
@@ -368,7 +374,7 @@ async function syncBoard(){
     /* 이미지 파일을 기기에 받아 두고, 서버가 허락하지 않으면 핀터레스트 주소로 바로 보여 준다 */
     try{const b=await fetchPinBlob(x.path);const url=URL.createObjectURL(b);try{const im=await loadImg(url);ratio=Math.round(im.naturalWidth/im.naturalHeight*1000)/1000;}catch(e){}URL.revokeObjectURL(url);imgId=await storeBlob(b);}
     catch(e){try{const im=await loadImg(remote);ratio=Math.round(im.naturalWidth/im.naturalHeight*1000)/1000;}catch(e2){console.warn('board pin',x.path,e2);continue;}}
-    S.pins.push({id:uid(),createdAt:base+(todo.length-i),saved:false,title:'',link:data.board||'',tags:[],ratio,imgId,remote,pinPath:x.path,from:'board'});n++;}
+    S.pins.push({id:uid(),createdAt:base+(todo.length-i),saved:false,title:x.title||'',link:data.board||'',tags:Array.isArray(x.tags)?[...x.tags]:[],ratio,imgId,remote,pinPath:x.path,from:'board'});n++;}
   if(!n)return;
   S.pins.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));await write('pins');render();toast(`보드에서 새 핀 ${n}장을 담았어요`);
 }
